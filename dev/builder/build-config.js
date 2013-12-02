@@ -11,6 +11,7 @@ var CKBUILDER_CONFIG = {
 		'.gitignore',
 		'.gitattributes',
 		'.idea',
+		'ckeditor.iml',
 		'.mailmap',
 		'.DS_Store'
 	],
@@ -31,7 +32,6 @@ var CKBUILDER_CONFIG = {
 		entities: 1,
 		filebrowser: 1,
 		find: 1,
-		flash: 1,
 		floatingspace: 1,
 		font: 1,
 		format: 1,
@@ -52,7 +52,6 @@ var CKBUILDER_CONFIG = {
 		pagebreak: 1,
 		pastefromword: 1,
 		pastetext: 1,
-		preview: 1,
 		print: 1,
 		removeformat: 1,
 		resize: 1,
@@ -71,5 +70,12 @@ var CKBUILDER_CONFIG = {
 		toolbar: 1,
 		undo: 1,
 		wysiwygarea: 1
+	},
+    languages : {
+		'de' : 1,
+		'en' : 1,
+		'fr' : 1,
+		'it' : 1,
+		'nl' : 1
 	}
 };
