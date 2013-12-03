@@ -71,7 +71,8 @@ var CKBUILDER_CONFIG = {
 		toolbar: 1,
 		undo: 1,
 		wordcount: 1,
-		wysiwygarea: 1
+		wysiwygarea: 1,
+		youtube: 1
 	},
     languages : {
 		'de' : 1,
