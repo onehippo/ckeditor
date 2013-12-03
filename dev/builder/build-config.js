@@ -22,6 +22,7 @@ var CKBUILDER_CONFIG = {
 		bidi: 1,
 		blockquote: 1,
 		clipboard: 1,
+		codemirror: 1,
 		colorbutton: 1,
 		colordialog: 1,
 		contextmenu: 1,
