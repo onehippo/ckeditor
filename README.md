@@ -20,8 +20,10 @@ For example, version '4.3.0.1' extends CKEditor 4.3.0.
 Each branch 'hippo/<version>' contains all commits in the CKEditor branch 'release/<version>'
 plus all Hippo-specific modifications.
 
-The version number is included in the generated code. Be sure to update the 'version' parameter in the script
-/dev/builder/build.sh before tagging a release.
+A release is available in a tag are named 'hippo/<version>', e.g. 'hippo/4.3.0.1'.
+
+The version number is included in the generated code. Be sure to update the 'BUILD_VERSION' variable in the script
+/dev/builder/build.sh before tagging a release. In between tags the version number should get the suffix '-SNAPSHOT'.
 
 ### Branches for external plugins
 

@@ -4,6 +4,8 @@
 
 # Build CKEditor using the default settings (and build.js)
 
+BUILD_VERSION="4.3.0.1"
+
 set -e
 
 echo "CKBuilder - Builds a release version of ckeditor-dev."
@@ -54,7 +56,7 @@ cd ../..
 echo ""
 echo "Starting CKBuilder..."
 
-java -jar ckbuilder/$CKBUILDER_VERSION/ckbuilder.jar --build ../../ release --version="4.3.0.1-SNAPSHOT" --build-config build-config.js --overwrite --skip-omitted-in-build-config "$@"
+java -jar ckbuilder/$CKBUILDER_VERSION/ckbuilder.jar --build ../../ release --version=$BUILD_VERSION --build-config build-config.js --overwrite --skip-omitted-in-build-config "$@"
 
 echo ""
 echo "Copying CodeMirror icons..."
