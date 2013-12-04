@@ -1,5 +1,59 @@
-CKEditor 4 - The best browser-based WYSIWYG editor
-==================================================
+CKEditor 4 for Hippo CMS
+========================
+
+## Hippo-specific modifications
+
+This repository contains Hippo-specific modifications of CKEditor 4.
+The build includes only the plugins used in Hippo CMS (see dev/builder/build-config.js).
+
+The following external plugins are included:
+
+  - [codemirror](https://github.com/w8tcha/CKEditor-CodeMirror-Plugin)
+  - [wordcount](https://github.com/w8tcha/CKEditor-WordCount-Plugin)
+  - [youtube](https://github.com/fonini/ckeditor-youtube-plugin)
+
+## Versions
+
+A Hippo-specific CKEditor build adds a 1-based nano version to the CKEditor version it extends.
+For example, version '4.3.0.1' extends CKEditor 4.3.0.
+
+Each branch 'hippo/<version>' contains all commits in the CKEditor branch 'release/<version>'
+plus all Hippo-specific modifications.
+
+The version number is included in the generated code. Be sure to update the 'version' parameter in the script
+/dev/builder/build.sh before tagging a release.
+
+### Branches for external plugins
+
+The Git repository of each external plugin is available as a remote named after the plugin.
+It master branch is available locally as '<plugin>/master'. For example, the CodeMirror master
+branch is available locally as 'codemirror/master'. This allows easy Hippo-specific modifications
+of the plugin code, if needed.
+
+Only a part of each external plugin's code has to be included in the Hippo CKEditor build,
+i.e. the part that should to into the CKEditor subdirectory 'plugins/XXX'. The history of that
+part is kept in a branch 'XXX/plugin' and included as a subtree merge under the directory 'plugins/XXX'.
+
+For example, all CodeMirror plugin code is located in the branch 'codemirror/master'
+under the directory 'codemirror'. All commits that affect that subdirectory are kept
+in the branch 'codemirror/plugin'. The code in the branch 'codemirror/plugin' is then
+included in a Hippo CKEditor branch under the directory 'plugins/codemirror'.
+
+## Adding a new external plugin
+
+The following example adds a fictitious external plugin called 'example' to the Hippo CKEditor 4.3.x build.
+Its Git repository contains a subdirectory 'code' that should go into the CKEditor directory 'plugins/example'.
+
+  1. git remote add example <remote url>
+  2. git fetch example
+  3. git checkout -b example/master example/master
+  4. git subtree split --prefix=code/ -b example/plugin
+  5. git checkout hippo/4.3.x
+  6. git read-tree --prefix=plugins/example/ -u example/plugin
+
+Add the 'example' plugin to the file dev/builder/build-config.js to include it in the Hippo CKEditor build.
+
+## The remainder of this file contains the unmodified CKEditor README
 
 ## Development Code
 
