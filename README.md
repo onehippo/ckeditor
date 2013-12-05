@@ -14,7 +14,7 @@ The following external plugins are included:
 
 ## Versions
 
-A Hippo-specific CKEditor build adds a 1-based nano version to the CKEditor version it extends, prefix with `-h`.
+A Hippo-specific CKEditor build adds a 1-based nano version to the CKEditor version it extends, prefixed with `-h`.
 For example, version `4.3.0-h1` extends CKEditor `4.3.0`.
 
 Each branch `hippo/<version>` contains all commits in the CKEditor branch `release/<version>`
