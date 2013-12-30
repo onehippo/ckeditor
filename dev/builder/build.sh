@@ -4,7 +4,7 @@
 
 # Build CKEditor using the default settings (and build.js)
 
-BUILD_VERSION="4.3.0-h2"
+BUILD_VERSION="4.3.0-h3"
 
 set -e
 
