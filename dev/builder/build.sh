@@ -4,8 +4,6 @@
 
 # Build CKEditor using the default settings (and build.js)
 
-BUILD_VERSION="4.3.0-h3"
-
 set -e
 
 echo "CKBuilder - Builds a release version of ckeditor-dev."
@@ -17,6 +15,13 @@ CKBUILDER_URL="http://download.cksource.com/CKBuilder/$CKBUILDER_VERSION/ckbuild
 PROGNAME=$(basename $0)
 MSG_UPDATE_FAILED="Warning: The attempt to update ckbuilder.jar failed. The existing file will be used."
 MSG_DOWNLOAD_FAILED="It was not possible to download ckbuilder.jar"
+
+if [ $# -ne 1 ]; then
+  echo "usage: $0 <build version>"
+  exit 1
+fi
+
+BUILD_VERSION="$1"
 
 function error_exit
 {
