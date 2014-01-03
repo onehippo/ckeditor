@@ -368,5 +368,5 @@ CKEDITOR.tools.extend( CKEDITOR.config, {
 	 * @member CKEDITOR.config
 	 * @todo
 	 */
-	linkShowSurroundingAnchors: true,
+	linkShowSurroundingAnchors: true
 });
