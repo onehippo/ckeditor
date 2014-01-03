@@ -84,7 +84,6 @@ CKEDITOR.dialog.add( 'link', function( editor ) {
 
 	var popupRegex = /\s*window.open\(\s*this\.href\s*,\s*(?:'([^']*)'|null)\s*,\s*'([^']*)'\s*\)\s*;\s*return\s*false;*\s*/;
 	var popupFeaturesRegex = /(?:^|,)([^=]+)=(\d+|yes|no)/gi;
-	var linkTypes = ( editor.config.linkTypes || 'url,anchor,email' ).split( ',' );
 
 	var parseLink = function( editor, element ) {
 			var href = ( element && ( element.data( 'cke-saved-href' ) || element.getAttribute( 'href' ) ) ) || '',
@@ -147,7 +146,7 @@ CKEDITOR.dialog.add( 'link', function( editor ) {
 					retval.url.protocol = urlMatch[ 1 ];
 					retval.url.url = urlMatch[ 2 ];
 				} else
-					retval.type = linkTypes[0];
+					retval.type = 'url';
 			}
 
 			// Load target and popup settings.
@@ -323,15 +322,7 @@ CKEDITOR.dialog.add( 'link', function( editor ) {
 	}
 
 	var commonLang = editor.lang.common,
-		linkLang = editor.lang.link,
-		linkTypeItems = [];
-
-	for ( var i = 0; i < linkTypes.length; i++ ) {
-		linkTypeItems.push( [
-			linkLang[ 'to' + CKEDITOR.tools.capitalize( linkTypes[i] ) ],
-			linkTypes[ i ]
-		] );
-	}
+		linkLang = editor.lang.link;
 
 	return {
 		title: linkLang.title,
@@ -347,8 +338,12 @@ CKEDITOR.dialog.add( 'link', function( editor ) {
 				id: 'linkType',
 				type: 'select',
 				label: linkLang.type,
-				'default': linkTypes[0],
-				items: linkTypeItems,
+				'default': 'url',
+				items: [
+					[ linkLang.toUrl, 'url' ],
+					[ linkLang.toAnchor, 'anchor' ],
+					[ linkLang.toEmail, 'email' ]
+					],
 				onChange: linkTypeChanged,
 				setup: function( data ) {
 					if ( data.type )
