@@ -33,8 +33,8 @@ plus all Hippo-specific modifications.
 
 A release is available in a tag are named `hippo/<version>`, e.g. `hippo/4.3.0-h1`.
 
-The version number is included in the generated code. Be sure to bump the `BUILD_VERSION` variable in the script
-`/dev/builder/build.sh` after tagging a release.
+The script `/dev/builder/build.sh` needs a 'build version' parameter, which is burned into the generated code.
+Hippo CMS uses the same version number as in the tag name (e.g. '4.3.0-h1').
 
 ### Branches for external plugins
 
