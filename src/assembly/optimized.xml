@@ -15,6 +15,12 @@
     <fileSet>
       <directory>dev/builder/release/ckeditor</directory>
       <outputDirectory>ckeditor/optimized</outputDirectory>
+      <excludes>
+        <exclude>config.js</exclude>
+        <exclude>LICENSE.md</exclude>
+        <exclude>pom.xml</exclude>
+        <exclude>target/**</exclude>
+      </excludes>
     </fileSet>
   </fileSets>
   <files>
