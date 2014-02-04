@@ -36,6 +36,16 @@ A release is available in a tag are named `hippo/<version>`, e.g. `hippo/4.3.0-h
 The script `/dev/builder/build.sh` needs a 'build version' parameter, which is burned into the generated code.
 Hippo CMS uses the same version number as in the tag name (e.g. '4.3.0-h1').
 
+### Deployment to Nexus
+
+Prerequisites:
+
+  - [Maven](http://maven.apache.org/)
+
+Deployment command:
+
+    > mvn clean deploy
+
 ### Branches for external plugins
 
 The Git repository of each external plugin is available as a remote named after the plugin.
