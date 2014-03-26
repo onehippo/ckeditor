@@ -8,7 +8,7 @@ CKEDITOR.plugins.setLang( 'link', 'nl', {
 	advisoryContentType: 'Aanbevolen content-type',
 	advisoryTitle: 'Adviserende titel',
 	anchor: {
-		toolbar: 'Interne link',
+		toolbar: 'Anker',
 		menu: 'Eigenschappen anker',
 		title: 'Eigenschappen anker',
 		name: 'Naam anker',
