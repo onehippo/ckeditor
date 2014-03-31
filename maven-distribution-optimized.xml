@@ -18,8 +18,8 @@
       <excludes>
         <exclude>config.js</exclude>
         <exclude>LICENSE.md</exclude>
-        <exclude>pom.xml</exclude>
         <exclude>target/**</exclude>
+        <exclude>*.xml</exclude>
       </excludes>
     </fileSet>
   </fileSets>

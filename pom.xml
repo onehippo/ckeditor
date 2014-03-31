@@ -15,7 +15,7 @@
   <name>Hippo CKEditor</name>
   <description>CKEditor for Hippo CMS</description>
   <artifactId>hippo-ckeditor</artifactId>
-  <version>4.3.0-h6</version>
+  <version>4.3.0-h7-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -88,7 +88,7 @@
             </goals>
             <configuration>
               <descriptors>
-                <descriptor>${basedir}/src/assembly/optimized.xml</descriptor>
+                <descriptor>${basedir}/maven-distribution-optimized.xml</descriptor>
               </descriptors>
             </configuration>
           </execution>
@@ -100,7 +100,7 @@
             </goals>
             <configuration>
               <descriptors>
-                <descriptor>${basedir}/src/assembly/sources.xml</descriptor>
+                <descriptor>${basedir}/maven-distribution-sources.xml</descriptor>
               </descriptors>
             </configuration>
           </execution>
