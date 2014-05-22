@@ -14,15 +14,6 @@ The following external plugins are included:
   - [wordcount](https://github.com/w8tcha/CKEditor-WordCount-Plugin)
   - [youtube](https://github.com/fonini/ckeditor-youtube-plugin)
 
-### Surrounding anchors
-
-The custom configuration property `linkShowSurroundingAnchors` controls whether
-anchors surrounding the editor are shown as targets in the 'Link to anchors in the text'
-option of the Link dialog. The default value is `true`, which corresponds to the behavior
-of vanilla CKEditor. When set to `false`, only anchors within the editable area are shown
-as possible targets. The latter is especially useful when the 'divarea' plugin is used and
-not all anchors in the surrounding page should show up as options in the Link dialog.
-
 ## Versions
 
 A Hippo-specific CKEditor build adds a 1-based nano version to the CKEditor version it extends, prefixed with `-h`.
