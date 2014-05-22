@@ -1,6 +1,14 @@
 CKEditor 4 Changelog
 ====================
 
+## CKEditor 4.3.0-h6
+
+* [CMS7-7677](https://issues.onehippo.com/browse/CMS7-7677) Improve Dutch and English labels for links
+
+## CKEditor 4.3.0-h5
+
+* [CMS7-7688](https://issues.onehippo.com/browse/CMS7-7688) Publish CKEditor in Nexus and use it as CMS dependency
+
 ## CKEditor 4.3.0-h4
 
 * [CMS7-7615](https://issues.onehippo.com/browse/CMS7-7615) Added configuration option 'linkShowSurroundingAnchors', removed option 'linkTypes'
