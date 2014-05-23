@@ -1,5 +1,135 @@
-CKEditor 4 - The best browser-based WYSIWYG editor
-==================================================
+CKEditor 4 for Hippo CMS
+========================
+
+## Hippo-specific modifications
+
+This repository contains Hippo-specific modifications of CKEditor 4.
+The build includes only the plugins used in Hippo CMS (see dev/builder/build-config.js).
+
+### External plugins
+
+The following external plugins are included:
+
+  - [codemirror](https://github.com/w8tcha/CKEditor-CodeMirror-Plugin)
+  - [wordcount](https://github.com/w8tcha/CKEditor-WordCount-Plugin)
+  - [youtube](https://github.com/fonini/ckeditor-youtube-plugin)
+
+## Versions
+
+A Hippo-specific CKEditor build adds a 1-based nano version to the CKEditor version it extends, prefixed with `-h`.
+For example, version `4.3.0-h1` extends CKEditor `4.3.0`.
+
+Each branch `hippo/<version>` contains all commits in the CKEditor branch `release/<version>`
+plus all Hippo-specific modifications.
+
+A release is available in a tag are named `hippo/<version>`, e.g. `hippo/4.3.0-h1`.
+
+The script `/dev/builder/build.sh` needs a 'build version' parameter, which is burned into the generated code.
+Hippo CMS uses the same version number as in the tag name (e.g. '4.3.0-h1').
+
+### Deployment to Nexus
+
+Prerequisites:
+
+  - [Maven](http://maven.apache.org/)
+
+Deployment command:
+
+    mvn clean deploy
+
+## External plugin management
+
+Only a part of each external plugin's code has to be included in the Hippo CKEditor build,
+i.e. the part that should to into the CKEditor subdirectory `plugins/XXX`. The history of that
+part is kept in a branch `XXX/plugin` and included as a subtree merge under the directory `plugins/XXX`.
+
+For example, say all CodeMirror plugin code is located in a remote branch `codemirror/master`
+under the directory `codemirror`. All commits that affect that subdirectory are kept
+in the branch `codemirror/plugin`. The code in the branch `codemirror/plugin` is then
+included in a Hippo CKEditor branch under the directory `plugins/codemirror`.
+
+### Remotes for existing plugins
+
+After cloning this repository, add remotes for the upstream CKEditor repository and repositories
+of external plugins:
+ 
+    git remote add -f upstream            https://github.com/ckeditor/ckeditor-dev.git
+    git remote add -f upstream-codemirror https://github.com/w8tcha/CKEditor-CodeMirror-Plugin.git
+    git remote add -f upstream-youtube    https://github.com/fonini/ckeditor-youtube-plugin.git
+    git remote add -f upstream-wordcount  https://github.com/w8tcha/CKEditor-WordCount-Plugin.git
+
+### Adding a new external plugin
+
+The following example adds a fictitious external plugin called 'foo' to the Hippo CKEditor 4.3.x build.
+Its Git repository contains a subdirectory `code` that should go into the CKEditor directory `plugins/example`.
+
+First add the remote repository of the example plugin to your local Git repository: 
+
+    git remote add -f upstream-foo <remote url>
+  
+Second, create a local branch for the master branch of the plugin:     
+    
+    git checkout -b foo/master upstream-foo/master
+    
+Then create a separate branch 'foo/plugin' for the part of the plugin that should go into the 
+'plugins' directory of CKEditor. In our example that's everything in the subdirectory 'code':
+
+    git subtree split --prefix=code/ -b foo/plugin
+    
+Finally, add the extracted part of the plugin to the 'plugins' directory of CKEditor:
+    
+    git checkout hippo/4.3.x
+    git read-tree --prefix=plugins/foo/ -u foo/plugin
+
+Add the 'foo' plugin to the file `dev/builder/build-config.js` to include it in the Hippo CKEditor build.
+
+### Updating an external plugin
+
+The following example updates the 'foo' plugin with the latest changes from upstream.
+
+First get the changes: 
+
+    git checkout upstream-foo/master
+    git pull
+    
+Then create a branch 'foo/new-plugin' with the new plugin code: 
+    
+    git subtree split --prefix=code/ -b foo/new-plugin
+
+Now rebase the old plugin code onto the new plugin to avoid merge conflicts:
+
+    git checkout foo/new-plugin
+    git rebase foo/plugin
+    
+Then merge the new plugin code into the plugin branch:
+
+    git checkout foo/plugin
+    git merge foo/new-plugin
+
+Now we can include the updated plugin into the CKEditor tree.
+First remove the existing plugin from the CKEditor plugins directory:    
+    
+    git checkout hippo/4.3.x
+    rm -rf plugins/foo
+    git commit -a -m 'Remove foo plugin version 1'
+    
+Next, add the updated plugin from the branch again:
+     
+    git read-tree --prefix=plugins/foo/ -u foo/plugin
+    
+Push the changes in both the CKEditor branch and the plugin branch,
+so it's clear what the history is of the included plugin.
+
+    git checkout hippo/4.3.x
+    git push
+    git checkout foo/plugin
+    git push
+
+Finally, remove the new plugin branch since it is no longer needed:
+
+    git branch -D foo/new-plugin
+
+## The remainder of this file contains the unmodified CKEditor README
 
 ## Development Code
 

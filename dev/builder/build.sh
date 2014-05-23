@@ -16,6 +16,13 @@ PROGNAME=$(basename $0)
 MSG_UPDATE_FAILED="Warning: The attempt to update ckbuilder.jar failed. The existing file will be used."
 MSG_DOWNLOAD_FAILED="It was not possible to download ckbuilder.jar"
 
+if [ $# -ne 1 ]; then
+  echo "usage: $0 <build version>"
+  exit 1
+fi
+
+BUILD_VERSION="$1"
+
 function error_exit
 {
 	echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
@@ -54,7 +61,11 @@ cd ../..
 echo ""
 echo "Starting CKBuilder..."
 
-java -jar ckbuilder/$CKBUILDER_VERSION/ckbuilder.jar --build ../../ release --version="4.4.1 DEV" --build-config build-config.js --overwrite "$@"
+java -jar ckbuilder/$CKBUILDER_VERSION/ckbuilder.jar --build ../../ release --version=$BUILD_VERSION --build-config build-config.js --overwrite --skip-omitted-in-build-config "$@"
+
+echo ""
+echo "Copying CodeMirror icons..."
+cp -r ../../plugins/codemirror/icons release/ckeditor/plugins/codemirror/
 
 echo ""
 echo "Release created in the \"release\" directory."
