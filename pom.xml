@@ -37,8 +37,8 @@
   </repositories>
 
   <scm>
-    <connection>scm:git:git://github.com/onehippo/ckeditor.git</connection>
-    <developerConnection>scm:git:git://github.com/onehippo/ckeditor.git</developerConnection>
+    <connection>scm:git:git@github.com:onehippo/ckeditor.git</connection>
+    <developerConnection>scm:git:git@github.com:onehippo/ckeditor.git</developerConnection>
     <url>https://github.com/onehippo/ckeditor.git</url>
     <tag>HEAD</tag>
   </scm>
