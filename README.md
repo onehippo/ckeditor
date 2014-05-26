@@ -11,6 +11,7 @@ The build includes only the plugins used in Hippo CMS (see dev/builder/build-con
 The following external plugins are included:
 
   - [codemirror](https://github.com/w8tcha/CKEditor-CodeMirror-Plugin)
+  - [textselection] (https://github.com/w8tcha/CKEditor-TextSelection-Plugin)
   - [wordcount](https://github.com/w8tcha/CKEditor-WordCount-Plugin)
   - [youtube](https://github.com/fonini/ckeditor-youtube-plugin)
 
@@ -75,9 +76,10 @@ included in a Hippo CKEditor branch under the directory `plugins/codemirror`.
 
 Use the following commands to add remotes for the upstream repositories of all external plugins:
  
-    git remote add -f upstream-codemirror https://github.com/w8tcha/CKEditor-CodeMirror-Plugin.git
-    git remote add -f upstream-youtube    https://github.com/fonini/ckeditor-youtube-plugin.git
-    git remote add -f upstream-wordcount  https://github.com/w8tcha/CKEditor-WordCount-Plugin.git
+    git remote add -f upstream-codemirror    https://github.com/w8tcha/CKEditor-CodeMirror-Plugin.git
+    git remote add -f upstream-textselection https://github.com/w8tcha/CKEditor-TextSelection-Plugin
+    git remote add -f upstream-youtube       https://github.com/fonini/ckeditor-youtube-plugin.git
+    git remote add -f upstream-wordcount     https://github.com/w8tcha/CKEditor-WordCount-Plugin.git
 
 ### Adding a new external plugin
 
