@@ -65,7 +65,8 @@ Deployment command:
 
 Only a part of each external plugin's code has to be included in the Hippo CKEditor build,
 i.e. the part that should to into the CKEditor subdirectory `plugins/XXX`. The history of that
-part is kept in a branch `XXX/plugin` and included as a subtree merge under the directory `plugins/XXX`.
+part is kept in a branch `XXX/plugin`. The files are included with `git read-tree` under the 
+directory `plugins/XXX`.
 
 For example, say all CodeMirror plugin code is located in a remote branch `codemirror/master`
 under the directory `codemirror`. All commits that affect that subdirectory are kept
