@@ -15,7 +15,7 @@
   <name>Hippo CKEditor</name>
   <description>CKEditor for Hippo CMS</description>
   <artifactId>hippo-ckeditor</artifactId>
-  <version>4.4.1-h2-SNAPSHOT</version>
+  <version>4.4.1-h2</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -40,7 +40,7 @@
     <connection>scm:git:git@github.com:onehippo/ckeditor.git</connection>
     <developerConnection>scm:git:git@github.com:onehippo/ckeditor.git</developerConnection>
     <url>https://github.com/onehippo/ckeditor.git</url>
-    <tag>HEAD</tag>
+    <tag>hippo-ckeditor-4.4.1-h2</tag>
   </scm>
 
   <build>
