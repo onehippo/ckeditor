@@ -54,7 +54,7 @@ CKEDITOR.plugins.setLang( 'link', 'nl', {
 	targetFrameName: 'Naam doelframe',
 	targetPopup: '<popupvenster>',
 	targetPopupName: 'Naam popupvenster',
-	title: 'Link',
+	title: 'Externe link',
 	toEmail: 'E-mail',
     toAnchor: 'Link naar anker in tekst',
     toUrl: 'URL',
