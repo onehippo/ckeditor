@@ -11,7 +11,7 @@ CKEDITOR.plugins.setLang( 'link', 'de', {
 		toolbar: 'Anker einfügen/editieren',
 		menu: 'Anker ändern',
 		title: 'Eigenschaften des Ankers',
-		name: 'Name der Anker',
+		name: 'Name des Ankers',
 		errorName: 'Geben Sie den Namen des Ankers ein',
 		remove: 'Anker löschen'
 	},
