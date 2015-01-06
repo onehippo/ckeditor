@@ -81,9 +81,11 @@ CKEDITOR.lang[ 'eo' ] = {
 		alignLeft: 'Maldekstre',
 		alignRight: 'Dekstre',
 		alignCenter: 'Centre',
+		alignJustify: 'Ĝisrandigi Ambaŭflanke',
 		alignTop: 'Supre',
 		alignMiddle: 'Centre',
 		alignBottom: 'Malsupre',
+		alignNone: 'None', // MISSING
 		invalidValue	: 'Nevalida Valoro',
 		invalidHeight: 'Alto devas esti nombro.',
 		invalidWidth: 'Larĝo devas esti nombro.',

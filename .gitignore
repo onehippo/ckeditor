@@ -2,3 +2,6 @@
 *.iml
 dev/iconmaker/node_modules
 target
+node_modules
+.bender/*
+bender-*.log

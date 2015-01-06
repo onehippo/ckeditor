@@ -468,7 +468,8 @@
 				editable.on( 'contextmenu', preventBeforePasteEventNow, null, null, 0 );
 
 				editable.on( 'beforepaste', function( evt ) {
-					if ( evt.data && !evt.data.$.ctrlKey )
+					// Do not prevent event on CTRL+V and SHIFT+INS because it blocks paste (#11970).
+					if ( evt.data && !evt.data.$.ctrlKey && !evt.data.$.shiftKey )
 						preventBeforePasteEventNow();
 				}, null, null, 0 );
 
@@ -670,6 +671,15 @@
 			var sel = editor.getSelection();
 			var bms = sel.createBookmarks();
 
+			// #11384. On IE9+ we use native selectionchange (i.e. editor#selectionCheck) to cache the most
+			// recent selection which we then lock on editable blur. See selection.js for more info.
+			// selectionchange fired before getClipboardDataByPastebin() cached selection
+			// before creating bookmark (cached selection will be invalid, because bookmarks modified the DOM),
+			// so we need to fire selectionchange one more time, to store current seleciton.
+			// Selection will be locked when we focus pastebin.
+			if ( CKEDITOR.env.ie )
+				sel.root.fire( 'selectionchange' );
+
 			// Create container to paste into.
 			// For rich content we prefer to use "body" since it holds
 			// the least possibility to be splitted by pasted content, while this may
@@ -728,6 +738,10 @@
 				margin: 0,
 				padding: 0
 			} );
+
+			// Paste fails in Safari when the body tag has 'user-select: none'. (#12506)
+			if ( CKEDITOR.env.safari )
+				pastebin.setStyles( CKEDITOR.tools.cssVendorPrefix( 'user-select', 'text' ) );
 
 			// Check if the paste bin now establishes new editing host.
 			var isEditingHost = pastebin.getParent().isReadOnly();

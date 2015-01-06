@@ -20,7 +20,7 @@
 CKEDITOR.lang[ 'sk' ] = {
 	// ARIA description.
 	editor: 'Editor formátovaného textu',
-	editorPanel: 'Rich Text Editor panel', // MISSING
+	editorPanel: 'Panel editora formátovaného textu',
 
 	// Common messages and labels.
 	common: {
@@ -81,9 +81,11 @@ CKEDITOR.lang[ 'sk' ] = {
 		alignLeft: 'Vľavo',
 		alignRight: 'Vpravo',
 		alignCenter: 'Na stred',
+		alignJustify: 'Zarovnať do bloku',
 		alignTop: 'Nahor',
 		alignMiddle: 'Na stred',
 		alignBottom: 'Dole',
+		alignNone: 'Žiadne',
 		invalidValue	: 'Neplatná hodnota.',
 		invalidHeight: 'Výška musí byť číslo.',
 		invalidWidth: 'Šírka musí byť číslo.',

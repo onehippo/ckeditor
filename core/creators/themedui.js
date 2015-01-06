@@ -42,9 +42,21 @@ CKEDITOR.replaceClass = 'ckeditor';
 	/**
 	 * Creates a new editor instance at the end of a specific DOM element.
 	 *
-	 *		<div id="editorSpace"></div>
-	 *		...
-	 *		CKEDITOR.appendTo( 'editorSpace' );
+	 *		<!DOCTYPE html>
+	 * 		<html>
+	 * 			<head>
+	 * 				<meta charset="utf-8">
+	 * 				<title>CKEditor</title>
+	 * 				<!-- Make sure the path to CKEditor is correct. -->
+	 *				<script src="/ckeditor/ckeditor.js"></script>
+	 *			</head>
+	 *			<body>
+	 *				<div id="editorSpace"></div>
+	 *				<script>
+	 *					CKEDITOR.appendTo( 'editorSpace' );
+	 *				</script>
+	 *			</body>
+	 *		</html>
 	 *
 	 * @param {Object/String} element The DOM element, its ID, or name.
 	 * @param {Object} [config] The specific configuration to apply to this
@@ -76,6 +88,26 @@ CKEDITOR.replaceClass = 'ckeditor';
 	 *			// You can also customize the editor instance by having the function
 	 *			// modify the "config" parameter.
 	 *		} );
+	 *
+	 *		// Full page example where three <textarea> elements are replaced.
+	 *		<!DOCTYPE html>
+	 *		<html>
+	 *			<head>
+	 *				<meta charset="utf-8">
+	 *				<title>CKEditor</title>
+	 *				<!-- Make sure the path to CKEditor is correct. -->
+	 *				<script src="/ckeditor/ckeditor.js"></script>
+	 *			</head>
+	 *			<body>
+	 *				<textarea name="editor1"></textarea>
+	 *				<textarea name="editor2"></textarea>
+	 *				<textarea name="editor3"></textarea>
+	 *				<script>
+	 *					// Replace all three <textarea> elements above with CKEditor instances.
+	 *					CKEDITOR.replaceAll();
+	 *				</script>
+	 *			</body>
+	 *		</html>
 	 *
 	 * @param {String} [className] The `<textarea>` class name.
 	 * @param {Function} [function] An assertion function that must return `true` for a `<textarea>`
@@ -186,8 +218,9 @@ CKEDITOR.replaceClass = 'ckeditor';
 			editor.ui.space( 'contents' ).setHtml( '' );
 
 			editor.mode = '';
-		} else
+		} else {
 			editor._.previousModeData = editor.getData( 1 );
+		}
 
 		// Fire the mode handler.
 		this._.modes[ newMode ]( function() {
@@ -238,7 +271,15 @@ CKEDITOR.replaceClass = 'ckeditor';
 		var container = this.container,
 			contents = this.ui.space( 'contents' ),
 			contentsFrame = CKEDITOR.env.webkit && this.document && this.document.getWindow().$.frameElement,
-			outer = resizeInner ? container.getChild( 1 ) : container;
+			outer;
+
+		if ( resizeInner ) {
+			outer = this.container.getFirst( function( node ) {
+				return node.type == CKEDITOR.NODE_ELEMENT && node.hasClass( 'cke_inner' );
+			} );
+		} else {
+			outer = container;
+		}
 
 		// Set as border box width. (#5353)
 		outer.setSize( 'width', width, true );
@@ -338,8 +379,6 @@ CKEDITOR.replaceClass = 'ckeditor';
 		}
 	}
 
-	var themedTpl;
-
 	function loadTheme( editor ) {
 		var name = editor.name,
 			element = editor.element,
@@ -349,29 +388,29 @@ CKEDITOR.replaceClass = 'ckeditor';
 		var topHtml = editor.fire( 'uiSpace', { space: 'top', html: '' } ).html;
 		var bottomHtml = editor.fire( 'uiSpace', { space: 'bottom', html: '' } ).html;
 
-		if ( !themedTpl ) {
-			themedTpl = CKEDITOR.addTemplate( 'maincontainer', '<{outerEl}' +
+		var themedTpl = new CKEDITOR.template(
+			'<{outerEl}' +
 				' id="cke_{name}"' +
 				' class="{id} cke cke_reset cke_chrome cke_editor_{name} cke_{langDir} ' + CKEDITOR.env.cssClass + '" ' +
 				' dir="{langDir}"' +
 				' lang="{langCode}"' +
 				' role="application"' +
-				' aria-labelledby="cke_{name}_arialbl">' +
-				'<span id="cke_{name}_arialbl" class="cke_voice_label">{voiceLabel}</span>' +
-					'<{outerEl} class="cke_inner cke_reset" role="presentation">' +
-						'{topHtml}' +
-						'<{outerEl} id="{contentId}" class="cke_contents cke_reset" role="presentation"></{outerEl}>' +
-						'{bottomHtml}' +
-					'</{outerEl}>' +
-				'</{outerEl}>' );
-		}
+				( editor.title ? ' aria-labelledby="cke_{name}_arialbl"' : '' ) +
+				'>' +
+				( editor.title ? '<span id="cke_{name}_arialbl" class="cke_voice_label">{voiceLabel}</span>' : '' ) +
+				'<{outerEl} class="cke_inner cke_reset" role="presentation">' +
+					'{topHtml}' +
+					'<{outerEl} id="{contentId}" class="cke_contents cke_reset" role="presentation"></{outerEl}>' +
+					'{bottomHtml}' +
+				'</{outerEl}>' +
+			'</{outerEl}>' );
 
 		var container = CKEDITOR.dom.element.createFromHtml( themedTpl.output( {
 			id: editor.id,
 			name: name,
 			langDir: editor.lang.dir,
 			langCode: editor.langCode,
-			voiceLabel: [ editor.lang.editor, editor.name ].join( ', ' ),
+			voiceLabel: editor.title,
 			topHtml: topHtml ? '<span id="' + editor.ui.spaceId( 'top' ) + '" class="cke_top cke_reset_all" role="presentation" style="height:auto">' + topHtml + '</span>' : '',
 			contentId: editor.ui.spaceId( 'contents' ),
 			bottomHtml: bottomHtml ? '<span id="' + editor.ui.spaceId( 'bottom' ) + '" class="cke_bottom cke_reset_all" role="presentation">' + bottomHtml + '</span>' : '',
@@ -381,8 +420,9 @@ CKEDITOR.replaceClass = 'ckeditor';
 		if ( elementMode == CKEDITOR.ELEMENT_MODE_REPLACE ) {
 			element.hide();
 			container.insertAfter( element );
-		} else
+		} else {
 			element.append( container );
+		}
 
 		editor.container = container;
 

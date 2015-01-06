@@ -18,8 +18,8 @@
  */
 CKEDITOR.lang[ 'ku' ] = {
 	// ARIA description.
-	editor: 'سەرنووسەی دەقی بە پیت',
-	editorPanel: 'Rich Text Editor panel', // MISSING
+	editor: 'سەرنووسەی دەقی تەواو',
+	editorPanel: 'بڕگەی سەرنووسەی دەقی تەواو',
 
 	// Common messages and labels.
 	common: {
@@ -80,9 +80,11 @@ CKEDITOR.lang[ 'ku' ] = {
 		alignLeft: 'چەپ',
 		alignRight: 'ڕاست',
 		alignCenter: 'ناوەڕاست',
+		alignJustify: 'هاوستوونی',
 		alignTop: 'سەرەوە',
 		alignMiddle: 'ناوەند',
 		alignBottom: 'ژێرەوە',
+		alignNone: 'هیچ',
 		invalidValue	: 'نرخێکی نادرووست.',
 		invalidHeight: 'درێژی دەبێت ژمارە بێت.',
 		invalidWidth: 'پانی دەبێت ژمارە بێت.',

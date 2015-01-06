@@ -208,6 +208,7 @@ The development code contains the following main elements:
     - `plugins/`: contains most of the plugins maintained by the CKEditor core team.
     - `skin/`: contains the official default skin of CKEditor.
     - `dev/`: contains "developer tools".
+    - `tests/`: contains CKEditor tests suite.
 
 ### Building a Release
 
@@ -220,8 +221,12 @@ A "release ready" working copy of your development code will be built in the new
 `dev/builder/release/` folder. An internet connection is necessary to run the
 builder, for its first time at least.
 
+### Testing Environment
+
+Read more on how to set up the environment and execute tests in the [CKEditor Testing Environment](http://docs.ckeditor.com/#!/guide/dev_tests) guide.
+
 ### License
 
 Licensed under the GPL, LGPL and MPL licenses, at your choice.
 
-For full details about license, please check the LICENSE.md file.
+For full details about the license, please check the LICENSE.md file.

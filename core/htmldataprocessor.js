@@ -49,7 +49,8 @@
 
 		editor.on( 'toHtml', function( evt ) {
 			var evtData = evt.data,
-				data = evtData.dataValue;
+				data = evtData.dataValue,
+				fixBodyTag;
 
 			// The source data is already HTML, but we need to clean
 			// it up and apply the filter.
@@ -116,10 +117,23 @@
 			// can be properly filtered.
 			data = unprotectRealComments( data );
 
+			if ( evtData.fixForBody === false ) {
+				fixBodyTag = false;
+			} else {
+				fixBodyTag = getFixBodyTag( evtData.enterMode, editor.config.autoParagraph );
+			}
+
 			// Now use our parser to make further fixes to the structure, as
 			// well as apply the filter.
-			evtData.dataValue = CKEDITOR.htmlParser.fragment.fromHtml(
-				data, evtData.context, evtData.fixForBody === false ? false : getFixBodyTag( evtData.enterMode, editor.config.autoParagraph ) );
+			data = CKEDITOR.htmlParser.fragment.fromHtml( data, evtData.context, fixBodyTag );
+
+			// The empty root element needs to be fixed by adding 'p' or 'div' into it.
+			// This avoids the need to create that element on the first focus (#12630).
+			if ( fixBodyTag ) {
+				fixEmptyRoot( data, fixBodyTag );
+			}
+
+			evtData.dataValue = data;
 		}, null, null, 5 );
 
 		// Filter incoming "data".
@@ -225,8 +239,9 @@
 				enterMode = options.enterMode;
 			}
 			// Backward compatibility. Since CKEDITOR 4.3 every option was a separate argument.
-			else
+			else {
 				context = options;
+			}
 
 			// Fall back to the editable as context if not specified.
 			if ( !context && context !== null )
@@ -307,16 +322,15 @@
 		function blockFilter( isOutput, fillEmptyBlock ) {
 
 			return function( block ) {
-
-				// DO NOT apply the filer if it's a fragment node.
+				// DO NOT apply the filler if it's a fragment node.
 				if ( block.type == CKEDITOR.NODE_DOCUMENT_FRAGMENT )
 					return;
 
 				cleanBogus( block );
 
-				if ( ( typeof fillEmptyBlock == 'function' ? fillEmptyBlock( block ) !== false : fillEmptyBlock ) &&
-						isEmptyBlockNeedFiller( block ) )
-				{
+				var shouldFillBlock = typeof fillEmptyBlock == 'function' ? fillEmptyBlock( block ) : fillEmptyBlock;
+
+				if ( shouldFillBlock !== false && isEmptyBlockNeedFiller( block ) ) {
 					block.add( createFiller( isOutput ) );
 				}
 			};
@@ -325,15 +339,13 @@
 		// Append a filler right after the last line-break BR, found at the end of block.
 		function brFilter( isOutput ) {
 			return function( br ) {
-
 				// DO NOT apply the filer if parent's a fragment node.
 				if ( br.parent.type == CKEDITOR.NODE_DOCUMENT_FRAGMENT )
 					return;
 
 				var attrs = br.attributes;
 				// Dismiss BRs that are either bogus or eol marker.
-				if ( 'data-cke-bogus' in attrs ||
-						 'data-cke-eol' in attrs ) {
+				if ( 'data-cke-bogus' in attrs || 'data-cke-eol' in attrs ) {
 					delete attrs [ 'data-cke-bogus' ];
 					return;
 				}
@@ -353,15 +365,15 @@
 
 			// BR that's not from IE<11 DOM, except for a EOL marker.
 			if ( !( isOutput && !CKEDITOR.env.needsBrFiller ) &&
-					 node.type == CKEDITOR.NODE_ELEMENT && node.name == 'br' &&
-					 !node.attributes[ 'data-cke-eol' ] )
+					node.type == CKEDITOR.NODE_ELEMENT && node.name == 'br' &&
+					!node.attributes[ 'data-cke-eol' ] ) {
 				return true;
+			}
 
 			var match;
+
 			// NBSP, possibly.
-			if ( node.type == CKEDITOR.NODE_TEXT &&
-					 ( match = node.value.match( tailNbspRegex ) ) )
-			{
+			if ( node.type == CKEDITOR.NODE_TEXT && ( match = node.value.match( tailNbspRegex ) ) ) {
 				// We need to separate tail NBSP out of a text node, for later removal.
 				if ( match.index ) {
 					( new CKEDITOR.htmlParser.text( node.value.substring( 0, match.index ) ) ).insertBefore( node );
@@ -393,19 +405,15 @@
 		function cleanBogus( block ) {
 			var bogus = [];
 			var last = getLast( block ), node, previous;
-			if ( last ) {
 
+			if ( last ) {
 				// Check for bogus at the end of this block.
 				// e.g. <p>foo<br /></p>
 				maybeBogus( last, 1 ) && bogus.push( last );
 
 				while ( last ) {
-
 					// Check for bogus at the end of any pseudo block contained.
-					if ( isBlockBoundary( last ) &&
-							 ( node = getPrevious( last ) ) &&
-							 maybeBogus( node ) )
-					{
+					if ( isBlockBoundary( last ) && ( node = getPrevious( last ) ) && maybeBogus( node ) ) {
 						// Bogus must have inline proceeding, instead single BR between two blocks,
 						// is considered as filler, e.g. <hr /><br /><hr />
 						if ( ( previous = getPrevious( node ) ) && !isBlockBoundary( previous ) )
@@ -436,9 +444,9 @@
 			// 1. For IE version >=8,  empty blocks are displayed correctly themself in wysiwiyg;
 			// 2. For the rest, at least table cell and list item need no filler space. (#6248)
 			if ( !isOutput && !CKEDITOR.env.needsBrFiller &&
-					 ( document.documentMode > 7 ||
-						 block.name in CKEDITOR.dtd.tr ||
-						 block.name in CKEDITOR.dtd.$listItem ) ) {
+				( document.documentMode > 7 ||
+					block.name in CKEDITOR.dtd.tr ||
+					block.name in CKEDITOR.dtd.$listItem ) ) {
 				return false;
 			}
 
@@ -446,21 +454,21 @@
 			return !last || block.name == 'form' && last.name == 'input' ;
 		}
 
-		var rules = { elements: {} };
-		var isOutput = type == 'html';
+		var rules = { elements: {} },
+			isOutput = type == 'html',
+			textBlockTags = CKEDITOR.tools.extend( {}, blockLikeTags );
 
 		// Build the list of text blocks.
-		var textBlockTags = CKEDITOR.tools.extend( {}, blockLikeTags );
 		for ( var i in textBlockTags ) {
 			if ( !( '#' in dtd[ i ] ) )
 				delete textBlockTags[ i ];
 		}
 
 		for ( i in textBlockTags )
-			rules.elements[ i ] = blockFilter( isOutput, editor.config.fillEmptyBlocks !== false );
+			rules.elements[ i ] = blockFilter( isOutput, editor.config.fillEmptyBlocks );
 
-		// Editable element is to be checked separately.
-		rules.root = blockFilter( isOutput );
+		// Editable element has to be checked separately.
+		rules.root = blockFilter( isOutput, false );
 		rules.elements.br = brFilter( isOutput );
 		return rules;
 	}
@@ -499,20 +507,20 @@
 	// Judge whether the node is an ghost node to be ignored, when traversing.
 	function isEmpty( node ) {
 		return node.type == CKEDITOR.NODE_TEXT &&
-		  !CKEDITOR.tools.trim( node.value ) ||
-		  node.type == CKEDITOR.NODE_ELEMENT &&
-		  node.attributes[ 'data-cke-bookmark' ];
+			!CKEDITOR.tools.trim( node.value ) ||
+			node.type == CKEDITOR.NODE_ELEMENT &&
+			node.attributes[ 'data-cke-bookmark' ];
 	}
 
 	// Judge whether the node is a block-like element.
 	function isBlockBoundary( node ) {
 		return node &&
-					 ( node.type == CKEDITOR.NODE_ELEMENT && node.name in blockLikeTags ||
-						 node.type == CKEDITOR.NODE_DOCUMENT_FRAGMENT );
+			( node.type == CKEDITOR.NODE_ELEMENT && node.name in blockLikeTags ||
+			node.type == CKEDITOR.NODE_DOCUMENT_FRAGMENT );
 	}
 
 	function append( parent, node ) {
-		var last = parent.children[ parent.children.length -1 ];
+		var last = parent.children[ parent.children.length - 1 ];
 		parent.children.push( node );
 		node.parent = parent;
 		if ( last ) {
@@ -639,26 +647,26 @@
 
 			// The contents of table should be in correct order (#4809).
 			table: function( element ) {
-					// Clone the array as it would become empty during the sort call.
-					var children = element.children.slice( 0 );
-					children.sort( function( node1, node2 ) {
-						var index1, index2;
+				// Clone the array as it would become empty during the sort call.
+				var children = element.children.slice( 0 );
 
-						// Compare in the predefined order.
-						if ( node1.type == CKEDITOR.NODE_ELEMENT &&
-								 node2.type == node1.type ) {
-							index1 = CKEDITOR.tools.indexOf( tableOrder, node1.name );
-							index2 = CKEDITOR.tools.indexOf( tableOrder, node2.name );
-						}
+				children.sort( function( node1, node2 ) {
+					var index1, index2;
 
-						// Make sure the sort is stable, if no order can be established above.
-						if ( !( index1 > -1 && index2 > -1 && index1 != index2 ) ) {
-							index1 = getNodeIndex( node1 );
-							index2 = getNodeIndex( node2 );
-						}
+					// Compare in the predefined order.
+					if ( node1.type == CKEDITOR.NODE_ELEMENT && node2.type == node1.type ) {
+						index1 = CKEDITOR.tools.indexOf( tableOrder, node1.name );
+						index2 = CKEDITOR.tools.indexOf( tableOrder, node2.name );
+					}
 
-						return index1 > index2 ? 1 : -1;
-					} );
+					// Make sure the sort is stable, if no order can be established above.
+					if ( !( index1 > -1 && index2 > -1 && index1 != index2 ) ) {
+						index1 = getNodeIndex( node1 );
+						index2 = getNodeIndex( node2 );
+					}
+
+					return index1 > index2 ? 1 : -1;
+				} );
 			},
 
 			// Restore param elements into self-closing.
@@ -708,7 +716,7 @@
 		},
 
 		attributes: {
-			'class': function( value, element ) {
+			'class': function( value ) {
 				// Remove all class names starting with "cke_".
 				return CKEDITOR.tools.ltrim( value.replace( /(?:^|\s+)cke_[^\s]*/g, '' ) ) || false;
 			}
@@ -718,7 +726,7 @@
 	if ( CKEDITOR.env.ie ) {
 		// IE outputs style attribute in capital letters. We should convert
 		// them back to lower case, while not hurting the values (#5930)
-		defaultHtmlFilterRulesForAll.attributes.style = function( value, element ) {
+		defaultHtmlFilterRulesForAll.attributes.style = function( value ) {
 			return value.replace( /(^|;)([^\:]+)/g, function( match ) {
 				return match.toLowerCase();
 			} );
@@ -862,7 +870,10 @@
 			( /<script[\s\S]*?<\/script>/gi ),
 
 			// <noscript> tags (get lost in IE and messed up in FF).
-			/<noscript[\s\S]*?<\/noscript>/gi
+			/<noscript[\s\S]*?<\/noscript>/gi,
+
+			// Avoid meta tags being stripped (#8117).
+			/<meta[\s\S]*?\/?>/gi
 		].concat( protectRegexes );
 
 		// First of any other protection, we must protect all comments
@@ -910,6 +921,14 @@
 
 		return data;
 	}
+
+	// Creates a block if the root element is empty.
+	function fixEmptyRoot( root, fixBodyTag ) {
+		if ( !root.children.length && CKEDITOR.dtd[ root.name ][ fixBodyTag ] ) {
+			var fixBodyElement = new CKEDITOR.htmlParser.element( fixBodyTag );
+			root.add( fixBodyElement );
+		}
+	}
 } )();
 
 /**
@@ -928,7 +947,7 @@
  *		};
  *
  * @since 3.5
- * @cfg {Boolean} [fillEmptyBlocks=true]
+ * @cfg {Boolean/Function} [fillEmptyBlocks=true]
  * @member CKEDITOR.config
  */
 

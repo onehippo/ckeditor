@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @license Copyright (c) 2003-2014, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.md or http://ckeditor.com/license
  */
@@ -46,28 +46,31 @@
 					iframe.on( 'load', onLoad );
 
 				var frameLabel = editor.title,
-					frameDesc = editor.lang.common.editorHelp;
+					helpLabel = editor.fire( 'ariaEditorHelpLabel', {} ).label;
 
 				if ( frameLabel ) {
-					if ( CKEDITOR.env.ie )
-						frameLabel += ', ' + frameDesc;
+					if ( CKEDITOR.env.ie && helpLabel )
+						frameLabel += ', ' + helpLabel;
 
 					iframe.setAttribute( 'title', frameLabel );
 				}
 
-				var labelId = CKEDITOR.tools.getNextId(),
-					desc = CKEDITOR.dom.element.createFromHtml( '<span id="' + labelId + '" class="cke_voice_label">' + frameDesc + '</span>' );
+				if ( helpLabel ) {
+					var labelId = CKEDITOR.tools.getNextId(),
+						desc = CKEDITOR.dom.element.createFromHtml( '<span id="' + labelId + '" class="cke_voice_label">' + helpLabel + '</span>' );
 
-				contentSpace.append( desc, 1 );
+					contentSpace.append( desc, 1 );
+					iframe.setAttribute( 'aria-describedby', labelId );
+				}
 
 				// Remove the ARIA description.
 				editor.on( 'beforeModeUnload', function( evt ) {
 					evt.removeListener();
-					desc.remove();
+					if ( desc )
+						desc.remove();
 				} );
 
 				iframe.setAttributes( {
-					'aria-describedby': labelId,
 					tabIndex: editor.tabIndex,
 					allowTransparency: 'true'
 				} );
@@ -136,30 +139,8 @@
 		script && script.parentNode.removeChild( script );
 		script = doc.getElementById( 'cke_shimscrpt' );
 		script && script.parentNode.removeChild( script );
-
-		if ( CKEDITOR.env.gecko ) {
-			// Force Gecko to change contentEditable from false to true on domReady
-			// (because it's previously set to true on iframe's body creation).
-			// Otherwise del/backspace and some other editable features will be broken in Fx <4
-			// See: #107 and https://bugzilla.mozilla.org/show_bug.cgi?id=440916
-			body.contentEditable = false;
-
-			// Remove any leading <br> which is between the <body> and the comment.
-			// This one fixes Firefox 3.6 bug: the browser inserts a leading <br>
-			// on document.write if the body has contenteditable="true".
-			if ( CKEDITOR.env.version < 20000 ) {
-				body.innerHTML = body.innerHTML.replace( /^.*<!-- cke-content-start -->/, '' );
-
-				// The above hack messes up the selection in FF36.
-				// To clean this up, manually select collapsed range that
-				// starts within the body.
-				setTimeout( function() {
-					var range = new CKEDITOR.dom.range( new CKEDITOR.dom.document( doc ) );
-					range.setStart( new CKEDITOR.dom.node( body ), 0 );
-					editor.getSelection().selectRanges( [ range ] );
-				}, 0 );
-			}
-		}
+		script = doc.getElementById( 'cke_basetagscrpt' );
+		script && script.parentNode.removeChild( script );
 
 		body.contentEditable = true;
 
@@ -181,6 +162,7 @@
 		doc = new CKEDITOR.dom.document( doc );
 
 		this.setup();
+		this.fixInitialSelection();
 
 		if ( CKEDITOR.env.ie ) {
 			doc.getDocumentElement().addClass( doc.$.compatMode );
@@ -218,28 +200,13 @@
 			} );
 		}
 
-		// ## START : disableNativeTableHandles and disableObjectResizing settings.
+		// Config props: disableObjectResizing and disableNativeTableHandles handler.
+		objectResizeDisabler( editor );
 
 		// Enable dragging of position:absolute elements in IE.
 		try {
 			editor.document.$.execCommand( '2D-position', false, true );
 		} catch ( e ) {}
-
-		// IE, Opera and Safari may not support it and throw errors.
-		try {
-			editor.document.$.execCommand( 'enableInlineTableEditing', false, !editor.config.disableNativeTableHandles );
-		} catch ( e ) {}
-
-		if ( editor.config.disableObjectResizing ) {
-			try {
-				this.getDocument().$.execCommand( 'enableObjectResizing', false, false );
-			} catch ( e ) {
-				// For browsers in which the above method failed, we can cancel the resizing on the fly (#4208)
-				this.attachListener( this, CKEDITOR.env.ie ? 'resizestart' : 'resize', function( evt ) {
-					evt.data.preventDefault();
-				} );
-			}
-		}
 
 		if ( CKEDITOR.env.gecko || CKEDITOR.env.ie && editor.document.$.compatMode == 'CSS1Compat' ) {
 			this.attachListener( this, 'keydown', function( evt ) {
@@ -295,11 +262,9 @@
 			} );
 		}
 
-		// ## END
-
-
 		var title = editor.document.getElementsByTag( 'title' ).getItem( 0 );
-		title.data( 'cke-title', editor.document.$.title );
+		// document.title is malfunctioning on Chrome, so get value from the element (#12402).
+		title.data( 'cke-title', title.getText() );
 
 		// [IE] JAWS will not recognize the aria label we used on the iframe
 		// unless the frame window title string is used as the voice label,
@@ -362,6 +327,8 @@
 
 				if ( isSnapshot ) {
 					this.setHtml( data );
+					this.fixInitialSelection();
+
 					// Fire dataReady for the consistency with inline editors
 					// and because it makes sense. (#10370)
 					editor.fire( 'dataReady' );
@@ -414,7 +381,7 @@
 
 						// The base must be the first tag in the HEAD, e.g. to get relative
 						// links on styles.
-						baseTag && ( data = data.replace( /<head>/, '$&' + baseTag ) );
+						baseTag && ( data = data.replace( /<head[^>]*?>/, '$&' + baseTag ) );
 
 						// Inject the extra stuff into <head>.
 						// Attention: do not change it before testing it well. (V2)
@@ -472,6 +439,16 @@
 						bootstrapCode +=
 							'<script id="cke_shimscrpt">' +
 								'window.parent.CKEDITOR.tools.enableHtml5Elements(document)' +
+							'</script>';
+					}
+
+					// IE<10 needs this hack to properly enable <base href="...">.
+					// See: http://stackoverflow.com/a/13373180/1485219 (#11910).
+					if ( baseTag && CKEDITOR.env.ie && CKEDITOR.env.version < 10 ) {
+						bootstrapCode +=
+							'<script id="cke_basetagscrpt">' +
+								'var baseTag = document.querySelector( "base" );' +
+								'baseTag.href = baseTag.href;' +
 							'</script>';
 					}
 
@@ -554,6 +531,48 @@
 		}
 	} );
 
+	function objectResizeDisabler( editor ) {
+		if ( CKEDITOR.env.gecko ) {
+			// FF allows to change resizing preferences by calling execCommand.
+			try {
+				var doc = editor.document.$;
+				doc.execCommand( 'enableObjectResizing', false, !editor.config.disableObjectResizing );
+				doc.execCommand( 'enableInlineTableEditing', false, !editor.config.disableNativeTableHandles );
+			} catch( e ) {}
+		} else if ( CKEDITOR.env.ie && CKEDITOR.env.version < 11 && editor.config.disableObjectResizing ) {
+			// It's possible to prevent resizing up to IE10.
+			blockResizeStart( editor );
+		}
+
+		// Disables resizing by preventing default action on resizestart event.
+		function blockResizeStart() {
+			var lastListeningElement;
+
+			// We'll attach only one listener at a time, instead of adding it to every img, input, hr etc.
+			// Listener will be attached upon selectionChange, we'll also check if there was any element that
+			// got listener before (lastListeningElement) - if so we need to remove previous listener.
+			editor.editable().attachListener( editor, 'selectionChange', function() {
+				var selectedElement = editor.getSelection().getSelectedElement();
+
+				if ( selectedElement ) {
+					if ( lastListeningElement ) {
+						lastListeningElement.detachEvent( 'onresizestart', resizeStartListener );
+						lastListeningElement = null;
+					}
+
+					// IE requires using attachEvent, because it does not work using W3C compilant addEventListener,
+					// tested with IE10.
+					selectedElement.$.attachEvent( 'onresizestart', resizeStartListener );
+					lastListeningElement = selectedElement.$;
+				}
+			} );
+		}
+
+		function resizeStartListener( evt ) {
+			evt.returnValue = false;
+		}
+	}
+
 	// DOM modification here should not bother dirty flag.(#4385)
 	function restoreDirty( editor ) {
 		if ( !editor.checkDirty() )
@@ -599,6 +618,12 @@
  *
  *		config.disableObjectResizing = true;
  *
+ * **Note:** Because of incomplete implementation of editing features in browsers
+ * this option does not work for inline editors (see ticket [#10197](http://dev.ckeditor.com/ticket/10197)),
+ * does not work in Internet Explorer 11+ (see [#9317](http://dev.ckeditor.com/ticket/9317#comment:16) and
+ * [IE11+ issue](https://connect.microsoft.com/IE/feedback/details/742593/please-respect-execcommand-enableobjectresizing-in-contenteditable-elements)).
+ * In Internet Explorer 8-10 this option only blocks resizing, but it is unable to hide the resize handles.
+ *
  * @cfg
  * @member CKEDITOR.config
  */
@@ -634,9 +659,14 @@ CKEDITOR.config.disableNativeTableHandles = true;
 CKEDITOR.config.disableNativeSpellChecker = true;
 
 /**
- * The CSS file(s) to be used to apply style to the content. It should
- * reflect the CSS used in the final pages where the content is to be
- * used.
+ * The CSS file(s) to be used to apply style to editor content. It should
+ * reflect the CSS used in the target pages where the content is to be
+ * displayed.
+ *
+ * **Note:** This configuration value is ignored by [inline editor](#!/guide/dev_inline)
+ * as it uses the styles that come directly from the page that CKEditor is
+ * rendered on. It is also ignored in the {@link #fullPage full page mode} in
+ * which developer has a full control over the HTML.
  *
  *		config.contentsCss = '/css/mysitestyles.css';
  *		config.contentsCss = ['/css/mysitestyles.css', '/css/anotherfile.css'];
@@ -648,7 +678,9 @@ CKEDITOR.config.contentsCss = CKEDITOR.getUrl( 'contents.css' );
 
 /**
  * Language code of  the writing language which is used to author the editor
- * content.
+ * content. This option accepts one single entry value in the format defined in the
+ * [Tags for Identifying Languages (BCP47)](http://www.ietf.org/rfc/bcp/bcp47.txt)
+ * IETF document and is used in the `lang` attribute.
  *
  *		config.contentsLanguage = 'fr';
  *
@@ -670,10 +702,12 @@ CKEDITOR.config.contentsCss = CKEDITOR.getUrl( 'contents.css' );
  * Whether to automatically create wrapping blocks around inline content inside the document body.
  * This helps to ensure the integrity of the block *Enter* mode.
  *
- * **Note:** Changing the default value might introduce unpredictable usability issues.
+ * **Note:** This option is deprecated. Changing the default value might introduce unpredictable usability issues and is
+ * highly unrecommended.
  *
  *		config.autoParagraph = false;
  *
+ * @deprecated
  * @since 3.6
  * @cfg {Boolean} [autoParagraph=true]
  * @member CKEDITOR.config

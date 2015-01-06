@@ -109,6 +109,10 @@
 			if ( obj === null || ( typeof( obj ) != 'object' ) || ( obj instanceof String ) || ( obj instanceof Number ) || ( obj instanceof Boolean ) || ( obj instanceof Date ) || ( obj instanceof RegExp ) )
 				return obj;
 
+			// DOM objects and window.
+			if ( obj.nodeType || obj.window === obj )
+				return obj;
+
 			// Objects.
 			clone = new obj.constructor();
 
@@ -174,7 +178,7 @@
 				var source = arguments[ i ];
 				for ( var propertyName in source ) {
 					// Only copy existed fields if in overwrite mode.
-					if ( overwrite === true || target[ propertyName ] == undefined ) {
+					if ( overwrite === true || target[ propertyName ] == null ) {
 						// Only copy  specified fields if list is provided.
 						if ( !propertiesList || ( propertyName in propertiesList ) )
 							target[ propertyName ] = source[ propertyName ];
