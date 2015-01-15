@@ -19,6 +19,7 @@
   <packaging>pom</packaging>
 
   <properties>
+    <maven.plugin.release.version>2.5</maven.plugin.release.version>
     <maven.plugin.exec.version>1.2.1</maven.plugin.exec.version>
   </properties>
 
