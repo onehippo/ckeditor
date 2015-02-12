@@ -17,5 +17,7 @@ CKEDITOR.plugins.setLang('youtube', 'nl', {
 	noWidth : 'U moet een breedte ingeven',
 	invalidWidth : 'U moet een geldige breedte ingeven',
 	noHeight : 'U moet een hoogte ingeven',
-	invalidHeight : 'U moet een geldige starttijd ingeven'
+	invalidHeight : 'U moet een geldige hoogte ingeven',
+	invalidTime : 'U moet een geldige starttijd ingeven',
+	txtResponsive : 'Responsive video'
 });
