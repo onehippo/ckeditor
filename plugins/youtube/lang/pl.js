@@ -1,6 +1,6 @@
 CKEDITOR.plugins.setLang('youtube', 'pl', {
-	button : 'Załacznik wideo z Youtube',
-	title : 'Załacznik wideo z Youtube',
+	button : 'Załącznik wideo z Youtube',
+	title : 'Załącznik wideo z Youtube',
 	txtEmbed : 'Wklej kod do umieszczenia',
 	txtUrl : 'Wklej link URL do wideo',
 	txtWidth : 'Szerokość',
@@ -18,5 +18,6 @@ CKEDITOR.plugins.setLang('youtube', 'pl', {
 	invalidWidth : 'Wprowadzona szerokość nie jest poprawna',
 	noHeight : 'Musisz wprowadzić wysokość',
 	invalidHeight : 'Wprowadzona wysokość nie jest poprawna',
-	invalidTime : 'Musisz wprowadzić poprawny czas rozpoczęcia'
+	invalidTime : 'Musisz wprowadzić poprawny czas rozpoczęcia',
+	txtResponsive : 'Responsive video'
 });
