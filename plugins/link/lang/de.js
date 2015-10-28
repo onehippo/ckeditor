@@ -1,7 +1,7 @@
 ﻿/*
 Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
-*/
+ For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
 CKEDITOR.plugins.setLang( 'link', 'de', {
 	acccessKey: 'Zugriffstaste',
 	advanced: 'Erweitert',
@@ -30,7 +30,7 @@ CKEDITOR.plugins.setLang( 'link', 'de', {
 	langDirRTL: 'Rechts nach Links (RTL)',
 	menu: 'Link bearbeiten',
 	name: 'Name',
-	noAnchors: '(Keine Anker im Dokument vorhanden)',
+	noAnchors: '(Keine Anker im Text gefunden)',
 	noEmail: 'Bitte geben Sie E-Mail-Adresse an',
 	noUrl: 'Bitte geben Sie die Link-URL an',
 	other: '<andere>',
@@ -54,11 +54,11 @@ CKEDITOR.plugins.setLang( 'link', 'de', {
 	targetFrameName: 'Ziel-Fenster-Name',
 	targetPopup: '<Pop-up Fenster>',
 	targetPopupName: 'Pop-up Fenster-Name',
-	title: 'Link',
-	toAnchor: 'Anker in dieser Seite',
+	title: 'Externer Link',
+	toAnchor: 'Anker im Text',
 	toEmail: 'E-Mail',
 	toUrl: 'URL',
-	toolbar: 'Link einfügen/editieren',
+	toolbar: 'Externer Link',
 	type: 'Link-Typ',
 	unlink: 'Link entfernen',
 	upload: 'Hochladen'
