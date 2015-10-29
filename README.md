@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # CKEditor 4 - The best browser-based WYSIWYG editor
 =======
 CKEditor 4 for Hippo CMS
