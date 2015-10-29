@@ -161,7 +161,6 @@ Finally, remove the new plugin branch since it is no longer needed:
     git branch -D foo/new-plugin
 
 ## The remainder of this file contains the unmodified CKEditor README
->>>>>>> hippo/4.4.x
 
 [![devDependency Status](https://david-dm.org/ckeditor/ckeditor-dev/dev-status.svg)](https://david-dm.org/ckeditor/ckeditor-dev#info=devDependencies)
 
