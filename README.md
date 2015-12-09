@@ -42,8 +42,15 @@ with the same version number. For example:
     git fetch upstream
     git checkout hippo/4.3.x
     git merge upstream/release/4.3.x
+
+When a new patch version is released upstream, its tag can be merged into the matching hippo-specific branch. 
+For example, to merge upstream tag 4.4.5:
     
-When a new major version is released upstream, a new hippo-specific branch should be created based on the upstream 
+    git fetch upstream
+    git checkout hippo/4.4.x
+    git merge 4.4.5 
+    
+When a new minor version is released upstream, a new hippo-specific branch should be created based on the upstream 
 branch. All hippo-specific customizations in the previous branch can then be merged into the new one. The new 
 branch must be pushed to origin, so other people can fetch it too. For example, to upgrade from 4.3.x to 4.4.x:
 
