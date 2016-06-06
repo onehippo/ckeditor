@@ -113,6 +113,7 @@ var CKBUILDER_CONFIG = {
 		'de' : 1,
 		'en' : 1,
 		'fr' : 1,
-		'nl' : 1
+		'nl' : 1,
+		'zh' : 1
 	}
 };
