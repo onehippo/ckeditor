@@ -1,9 +1,15 @@
-﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+/**
+ * @license Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.md or http://ckeditor.com/license
  */
 
 ( function() {
+	var isMSSelection = typeof window.getSelection != 'function',
+		nextRev = 1,
+		// #13816
+		fillingCharSequence = CKEDITOR.tools.repeat( '\u200b', 7 ),
+		fillingCharSequenceRegExp = new RegExp( fillingCharSequence + '( )?', 'g' );
+
 	// #### checkSelectionChange : START
 
 	// The selection change check basically saves the element parent tree of
@@ -41,8 +47,10 @@
 
 		var currentPath = this.elementPath();
 		if ( !currentPath.compare( this._.selectionPreviousPath ) ) {
+			// Handle case when dialog inserts new element but parent block and path (so also focus context) does not change. (#13362)
+			var sameBlockParent = this._.selectionPreviousPath && this._.selectionPreviousPath.blockLimit.equals( currentPath.blockLimit );
 			// Cache the active element, which we'll eventually lose on Webkit.
-			if ( CKEDITOR.env.webkit )
+			if ( CKEDITOR.env.webkit && !sameBlockParent )
 				this._.previousActive = this.document.getActive();
 
 			this._.selectionPreviousPath = currentPath;
@@ -138,72 +146,81 @@
 		return false;
 	}
 
-	function createFillingChar( element ) {
-		removeFillingChar( element, false );
+	function createFillingCharSequenceNode( editable ) {
+		removeFillingCharSequenceNode( editable, false );
 
-		var fillingChar = element.getDocument().createText( '\u200B' );
-		element.setCustomData( 'cke-fillingChar', fillingChar );
+		var fillingChar = editable.getDocument().createText( fillingCharSequence );
+		editable.setCustomData( 'cke-fillingChar', fillingChar );
 
 		return fillingChar;
 	}
 
-	function getFillingChar( element ) {
-		return element.getCustomData( 'cke-fillingChar' );
-	}
-
 	// Checks if a filling char has been used, eventualy removing it (#1272).
-	function checkFillingChar( element ) {
-		var fillingChar = getFillingChar( element );
+	function checkFillingCharSequenceNodeReady( editable ) {
+		var fillingChar = editable.getCustomData( 'cke-fillingChar' );
+
 		if ( fillingChar ) {
 			// Use this flag to avoid removing the filling char right after
 			// creating it.
-			if ( fillingChar.getCustomData( 'ready' ) )
-				removeFillingChar( element );
-			else
+			if ( fillingChar.getCustomData( 'ready' ) ) {
+				removeFillingCharSequenceNode( editable );
+			} else {
 				fillingChar.setCustomData( 'ready', 1 );
+			}
 		}
 	}
 
-	function removeFillingChar( element, keepSelection ) {
-		var fillingChar = element && element.removeCustomData( 'cke-fillingChar' );
-		if ( fillingChar ) {
+	function removeFillingCharSequenceNode( editable, keepSelection ) {
+		var fillingChar = editable && editable.removeCustomData( 'cke-fillingChar' );
 
+		if ( fillingChar ) {
 			// Text selection position might get mangled by
 			// subsequent dom modification, save it now for restoring. (#8617)
 			if ( keepSelection !== false ) {
-				var bm,
-					sel = element.getDocument().getSelection().getNative(),
+				var sel = editable.getDocument().getSelection().getNative(),
 					// Be error proof.
-					range = sel && sel.type != 'None' && sel.getRangeAt( 0 );
+					range = sel && sel.type != 'None' && sel.getRangeAt( 0 ),
+					fillingCharSeqLength = fillingCharSequence.length;
 
-				if ( fillingChar.getLength() > 1 && range && range.intersectsNode( fillingChar.$ ) ) {
-					bm = createNativeSelectionBookmark( sel );
+				// If there's some text other than the sequence in the FC text node and the range
+				// intersects with that node...
+				if ( fillingChar.getLength() > fillingCharSeqLength && range && range.intersectsNode( fillingChar.$ ) ) {
+					var bm = createNativeSelectionBookmark( sel );
 
-					// Anticipate the offset change brought by the removed char.
-					var startAffected = sel.anchorNode == fillingChar.$ && sel.anchorOffset > 0,
-						endAffected = sel.focusNode == fillingChar.$ && sel.focusOffset > 0;
-					startAffected && bm[ 0 ].offset--;
-					endAffected && bm[ 1 ].offset--;
+					// Correct start offset anticipating the removal of FC.
+					if ( sel.anchorNode == fillingChar.$ && sel.anchorOffset > fillingCharSeqLength ) {
+						bm[ 0 ].offset -= fillingCharSeqLength;
+					}
+
+					// Correct end offset anticipating the removal of FC.
+					if ( sel.focusNode == fillingChar.$ && sel.focusOffset > fillingCharSeqLength ) {
+						bm[ 1 ].offset -= fillingCharSeqLength;
+					}
 				}
 			}
 
 			// We can't simply remove the filling node because the user
 			// will actually enlarge it when typing, so we just remove the
 			// invisible char from it.
-			fillingChar.setText( replaceFillingChar( fillingChar.getText() ) );
+			fillingChar.setText( removeFillingCharSequenceString( fillingChar.getText(), 1 ) );
 
 			// Restore the bookmark preserving selection's direction.
 			if ( bm ) {
-				moveNativeSelectionToBookmark( element.getDocument().$, bm );
+				moveNativeSelectionToBookmark( editable.getDocument().$, bm );
 			}
 		}
 	}
 
-	function replaceFillingChar( html ) {
-		return html.replace( /\u200B( )?/g, function( match ) {
-			// #10291 if filling char is followed by a space replace it with nbsp.
-			return match[ 1 ] ? '\xa0' : '';
-		} );
+	// #13816
+	function removeFillingCharSequenceString( str, nbspAware ) {
+		if ( nbspAware ) {
+			return str.replace( fillingCharSequenceRegExp, function( m, p ) {
+				// #10291 if filling char is followed by a space replace it with NBSP.
+				return p ? '\xa0' : '';
+			} );
+		} else {
+			return str.replace( fillingCharSequence, '' );
+		}
 	}
 
 	function createNativeSelectionBookmark( sel ) {
@@ -225,10 +242,11 @@
 	}
 
 	// Creates cke_hidden_sel container and puts real selection there.
-	function hideSelection( editor ) {
-		var style = CKEDITOR.env.ie ? 'display:none' : 'position:fixed;top:0;left:-1000px',
+	function hideSelection( editor, ariaLabel ) {
+		var content = ariaLabel || '&nbsp;',
+			style = CKEDITOR.env.ie && CKEDITOR.env.version < 14 ? 'display:none' : 'position:fixed;top:0;left:-1000px',
 			hiddenEl = CKEDITOR.dom.element.createFromHtml(
-				'<div data-cke-hidden-sel="1" data-cke-temp="1" style="' + style + '">&nbsp;</div>',
+				'<div data-cke-hidden-sel="1" data-cke-temp="1" style="' + style + '">' + content + '</div>',
 				editor.document );
 
 		editor.fire( 'lockSnapshot' );
@@ -530,8 +548,16 @@
 				// On Webkit we use DOMFocusIn which is fired more often than focus - e.g. when moving from main editable
 				// to nested editable (or the opposite). Unlock selection all, but restore only when it was locked
 				// for the same active element, what will e.g. mean restoring after displaying dialog.
-				if ( restoreSel && CKEDITOR.env.webkit )
+				if ( restoreSel && CKEDITOR.env.webkit ) {
 					restoreSel = editor._.previousActive && editor._.previousActive.equals( doc.getActive() );
+
+					// On Webkit when editor uses divarea, native focus causes editable viewport to scroll
+					// to the top (when there is no active selection inside while focusing) so the scroll
+					// position should be restored after focusing back editable area. (#14659)
+					if ( restoreSel && editor._.previousScrollTop != null && editor._.previousScrollTop != editable.$.scrollTop ) {
+						editable.$.scrollTop = editor._.previousScrollTop;
+					}
+				}
 
 				editor.unlockSelection( restoreSel );
 				restoreSel = 0;
@@ -601,6 +627,9 @@
 				// the normal behavior on old IEs. (#1659, #7932)
 				if ( doc.$.compatMode != 'BackCompat' ) {
 					if ( CKEDITOR.env.ie7Compat || CKEDITOR.env.ie6Compat ) {
+						var textRng,
+							startRng;
+
 						html.on( 'mousedown', function( evt ) {
 							evt = evt.data;
 
@@ -643,11 +672,11 @@
 									evt.$.y < html.$.clientHeight &&
 									evt.$.x < html.$.clientWidth ) {
 								// Start to build the text range.
-								var textRng = body.$.createTextRange();
+								textRng = body.$.createTextRange();
 								moveRangeToPoint( textRng, evt.$.clientX, evt.$.clientY );
 
 								// Records the dragging start of the above text range.
-								var startRng = textRng.duplicate();
+								startRng = textRng.duplicate();
 
 								html.on( 'mousemove', onHover );
 								outerDoc.on( 'mouseup', onSelectEnd );
@@ -724,7 +753,7 @@
 						case 8: // BACKSPACE
 						case 45: // INS
 						case 46: // DEl
-							removeFillingChar( editable );
+							removeFillingCharSequenceNode( editable );
 					}
 
 				}, null, null, -1 );
@@ -839,65 +868,39 @@
 		}
 	} );
 
-	CKEDITOR.on( 'instanceReady', function( evt ) {
-		var editor = evt.editor,
-			fillingCharBefore,
-			selectionBookmark;
+	// On WebKit only, we need a special "filling" char on some situations
+	// (#1272). Here we set the events that should invalidate that char.
+	if ( CKEDITOR.env.webkit ) {
+		CKEDITOR.on( 'instanceReady', function( evt ) {
+			var editor = evt.editor;
 
-		// On WebKit only, we need a special "filling" char on some situations
-		// (#1272). Here we set the events that should invalidate that char.
-		if ( CKEDITOR.env.webkit ) {
 			editor.on( 'selectionChange', function() {
-				checkFillingChar( editor.editable() );
+				checkFillingCharSequenceNodeReady( editor.editable() );
 			}, null, null, -1 );
+
 			editor.on( 'beforeSetMode', function() {
-				removeFillingChar( editor.editable() );
+				removeFillingCharSequenceNode( editor.editable() );
 			}, null, null, -1 );
 
-			editor.on( 'beforeUndoImage', beforeData );
-			editor.on( 'afterUndoImage', afterData );
-			editor.on( 'beforeGetData', beforeData, null, null, 0 );
-			editor.on( 'getData', afterData );
-		}
-
-		function beforeData() {
-			var editable = editor.editable();
-			if ( !editable )
-				return;
-
-			var fillingChar = getFillingChar( editable );
-
-			if ( fillingChar ) {
-				// If the selection's focus or anchor is located in the filling char's text node,
-				// we need to restore the selection in afterData, because it will be lost
-				// when setting text. Selection's direction must be preserved.
-				// (#7437, #12489, #12491 comment:3)
-				var sel = editor.document.$.getSelection();
-				if ( sel.type != 'None' && ( sel.anchorNode == fillingChar.$ || sel.focusNode == fillingChar.$ ) )
-					selectionBookmark = createNativeSelectionBookmark( sel );
-
-				fillingCharBefore = fillingChar.getText();
-				fillingChar.setText( replaceFillingChar( fillingCharBefore ) );
-			}
-		}
-
-		function afterData() {
-			var editable = editor.editable();
-			if ( !editable )
-				return;
-
-			var fillingChar = getFillingChar( editable );
-
-			if ( fillingChar ) {
-				fillingChar.setText( fillingCharBefore );
-
-				if ( selectionBookmark ) {
-					moveNativeSelectionToBookmark( editor.document.$, selectionBookmark );
-					selectionBookmark = null;
+			// Filter Undo snapshot's HTML to get rid of Filling Char Sequence.
+			// Note: CKEDITOR.dom.range.createBookmark2() normalizes snapshot's
+			// bookmarks to anticipate the removal of FCSeq from the snapshot's HTML (#13816).
+			editor.on( 'getSnapshot', function( evt ) {
+				if ( evt.data ) {
+					evt.data = removeFillingCharSequenceString( evt.data );
 				}
-			}
-		}
-	} );
+			}, editor, null, 20 );
+
+			// Filter data to get rid of Filling Char Sequence. Filter on #toDataFormat
+			// instead of #getData because once removed, FCSeq may leave an empty element,
+			// which should be pruned by the dataProcessor (#13816).
+			// Note: Used low priority to filter when dataProcessor works on strings,
+			// not pseudo–DOM.
+			editor.on( 'toDataFormat', function( evt ) {
+				evt.data.dataValue = removeFillingCharSequenceString( evt.data.dataValue );
+			}, null, null, 0 );
+		} );
+	}
 
 	/**
 	 * Check the selection change in editor and potentially fires
@@ -1056,9 +1059,6 @@
 	 */
 	CKEDITOR.SELECTION_ELEMENT = 3;
 
-	var isMSSelection = typeof window.getSelection != 'function',
-		nextRev = 1;
-
 	/**
 	 * Manipulates the selection within a DOM element. If the current browser selection
 	 * spans outside of the element, an empty selection object is returned.
@@ -1158,6 +1158,21 @@
 
 	var styleObjectElements = { img: 1, hr: 1, li: 1, table: 1, tr: 1, td: 1, th: 1, embed: 1, object: 1, ol: 1, ul: 1,
 			a: 1, input: 1, form: 1, select: 1, textarea: 1, button: 1, fieldset: 1, thead: 1, tfoot: 1 };
+
+	CKEDITOR.tools.extend( CKEDITOR.dom.selection, {
+		_removeFillingCharSequenceString: removeFillingCharSequenceString,
+		_createFillingCharSequenceNode: createFillingCharSequenceNode,
+
+		/**
+		 * The sequence used in a WebKit-based browser to create a Filling Character. By default it is
+		 * a string of 7 zero-width space characters (U+200B).
+		 *
+		 * @since 4.5.7
+		 * @readonly
+		 * @property {String}
+		 */
+		FILLING_CHAR_SEQUENCE: fillingCharSequence
+	} );
 
 	CKEDITOR.dom.selection.prototype = {
 		/**
@@ -1899,7 +1914,7 @@
 					if ( range.collapsed && CKEDITOR.env.webkit && rangeRequiresFix( range ) ) {
 						// Append a zero-width space so WebKit will not try to
 						// move the selection by itself (#1272).
-						var fillingChar = createFillingChar( this.root );
+						var fillingChar = createFillingCharSequenceNode( this.root );
 						range.insertNode( fillingChar );
 
 						next = fillingChar.getNext();
@@ -1908,7 +1923,7 @@
 						// having something before it, it'll not blink.
 						// Let's remove it in this case.
 						if ( next && !fillingChar.getPrevious() && next.type == CKEDITOR.NODE_ELEMENT && next.getName() == 'br' ) {
-							removeFillingChar( this.root );
+							removeFillingCharSequenceNode( this.root );
 							range.moveToPosition( next, CKEDITOR.POSITION_BEFORE_START );
 						} else {
 							range.moveToPosition( fillingChar, CKEDITOR.POSITION_AFTER_END );
@@ -1952,14 +1967,20 @@
 		 * displayed to the user.
 		 *
 		 * @param {CKEDITOR.dom.element} element The element to be "selected".
+		 * @param {String} [ariaLabel] A string to be used by the screen reader to describe the selection.
 		 */
-		fake: function( element ) {
+		fake: function( element, ariaLabel ) {
 			var editor = this.root.editor;
+
+			// Attempt to retreive aria-label if possible (#14539).
+			if ( ariaLabel === undefined && element.hasAttribute( 'aria-label' ) ) {
+				ariaLabel = element.getAttribute( 'aria-label' );
+			}
 
 			// Cleanup after previous selection - e.g. remove hidden sel container.
 			this.reset();
 
-			hideSelection( editor );
+			hideSelection( editor, ariaLabel );
 
 			// Set this value after executing hiseSelection, because it may
 			// cause reset() which overwrites cache.

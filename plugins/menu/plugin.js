@@ -1,5 +1,5 @@
-﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+/**
+ * @license Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.md or http://ckeditor.com/license
  */
 
@@ -41,10 +41,10 @@ CKEDITOR.plugins.add( 'menu', {
 		};
 
 		/**
-		 * Adds one or more items from the specified definition array to the editor context menu.
+		 * Adds one or more items from the specified definition object to the editor context menu.
 		 *
 		 * @method
-		 * @param {Array} definitions List of definitions for each menu item as if {@link #addMenuItem} is called.
+		 * @param {Object} definitions Object where keys are used as itemName and corresponding values as definition for a {@link #addMenuItem} call.
 		 * @member CKEDITOR.editor
 		 */
 		editor.addMenuItems = function( definitions ) {

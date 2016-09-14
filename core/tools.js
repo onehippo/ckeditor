@@ -1,5 +1,5 @@
 /**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * @license Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.md or http://ckeditor.com/license
  */
 
@@ -19,6 +19,9 @@
 		gtRegex = />/g,
 		ltRegex = /</g,
 		quoteRegex = /"/g,
+		tokenCharset = 'abcdefghijklmnopqrstuvwxyz0123456789',
+		TOKEN_COOKIE_NAME = 'ckCsrfToken',
+		TOKEN_LENGTH = 40,
 
 		allEscRegex = /&(lt|gt|amp|quot|nbsp|shy|#\d{1,5});/g,
 		namedEntities = {
@@ -978,6 +981,23 @@
 		},
 
 		/**
+		 * Normalizes hexadecimal notation so that the color string is always 6 characters long and lowercase.
+		 *
+		 * @param {String} styleText The style data (or just a string containing hex colors) to be converted.
+		 * @returns {String} The style data with hex colors normalized.
+		 */
+		normalizeHex: function( styleText ) {
+			return styleText.replace( /#(([0-9a-f]{3}){1,2})($|;|\s+)/gi, function( match, hexColor, hexColorPart, separator ) {
+				var normalizedHexColor = hexColor.toLowerCase();
+				if ( normalizedHexColor.length == 3 ) {
+					var parts = normalizedHexColor.split( '' );
+					normalizedHexColor = [ parts[ 0 ], parts[ 0 ], parts[ 1 ], parts[ 1 ], parts[ 2 ], parts[ 2 ] ].join( '' );
+				}
+				return '#' + normalizedHexColor + separator;
+			} );
+		},
+
+		/**
 		 * Turns inline style text properties into one hash.
 		 *
 		 * @param {String} styleText The style data to be parsed.
@@ -993,8 +1013,12 @@
 				// Injects the style in a temporary span object, so the browser parses it,
 				// retrieving its final format.
 				var temp = new CKEDITOR.dom.element( 'span' );
-				temp.setAttribute( 'style', styleText );
-				styleText = CKEDITOR.tools.convertRgbToHex( temp.getAttribute( 'style' ) || '' );
+				styleText = temp.setAttribute( 'style', styleText ).getAttribute( 'style' ) || '';
+			}
+
+			// Normalize colors.
+			if ( styleText ) {
+				styleText = CKEDITOR.tools.normalizeHex( CKEDITOR.tools.convertRgbToHex( styleText ) );
 			}
 
 			// IE will leave a single semicolon when failed to parse the style text. (#3891)
@@ -1004,10 +1028,9 @@
 			styleText.replace( /&quot;/g, '"' ).replace( /\s*([^:;\s]+)\s*:\s*([^;]+)\s*(?=;|$)/g, function( match, name, value ) {
 				if ( normalize ) {
 					name = name.toLowerCase();
-					// Normalize font-family property, ignore quotes and being case insensitive. (#7322)
-					// http://www.w3.org/TR/css3-fonts/#font-family-the-font-family-property
+					// Drop extra whitespacing from font-family.
 					if ( name == 'font-family' )
-						value = value.toLowerCase().replace( /["']/g, '' ).replace( /\s*,\s*/g, ',' );
+						value = value.replace( /\s*,\s*/g, ',' );
 					value = CKEDITOR.tools.trim( value );
 				}
 
@@ -1295,8 +1318,115 @@
 		 * @since 4.4
 		 * @readonly
 		 */
-		transparentImageData: 'data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw=='
+		transparentImageData: 'data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==',
+
+
+		/**
+		 * Returns the value of the cookie with a given name or `null` if the cookie is not found.
+		 *
+		 * @since 4.5.6
+		 * @param {String} name
+		 * @returns {String}
+		 */
+		getCookie: function( name ) {
+			name = name.toLowerCase();
+			var parts = document.cookie.split( ';' );
+			var pair, key;
+
+			for ( var i = 0; i < parts.length; i++ ) {
+				pair = parts[ i ].split( '=' );
+				key = decodeURIComponent( CKEDITOR.tools.trim( pair[ 0 ] ).toLowerCase() );
+
+				if ( key === name ) {
+					return decodeURIComponent( pair.length > 1 ? pair[ 1 ] : '' );
+				}
+			}
+
+			return null;
+		},
+
+		/**
+		 * Sets the value of the cookie with a given name.
+		 *
+		 * @since 4.5.6
+		 * @param {String} name
+		 * @param {String} value
+		 */
+		setCookie: function( name, value ) {
+			document.cookie = encodeURIComponent( name ) + '=' + encodeURIComponent( value ) + ';path=/';
+		},
+
+		/**
+		 * Returns the CSRF token value. The value is a hash stored in `document.cookie`
+		 * under the `ckCsrfToken` key. The CSRF token can be used to secure the communication
+		 * between the web browser and the server, i.e. for the file upload feature in the editor.
+		 *
+		 * @since 4.5.6
+		 * @returns {String}
+		 */
+		getCsrfToken: function() {
+			var token = CKEDITOR.tools.getCookie( TOKEN_COOKIE_NAME );
+
+			if ( !token || token.length != TOKEN_LENGTH ) {
+				token = generateToken( TOKEN_LENGTH );
+				CKEDITOR.tools.setCookie( TOKEN_COOKIE_NAME, token );
+			}
+
+			return token;
+		},
+
+		/**
+		 * Returns an escaped CSS selector. `CSS.escape()` is used if defined, leading digit is escaped otherwise.
+		 *
+		 * @since 4.5.10
+		 * @param {String} selector A CSS selector to escape.
+		 * @returns {String} An escaped selector.
+		 */
+		escapeCss: function( selector ) {
+			// Invalid input.
+			if ( !selector ) {
+				return '';
+			}
+
+			// CSS.escape() can be used.
+			if ( window.CSS && CSS.escape ) {
+				return CSS.escape( selector );
+			}
+
+			// Simple leading digit escape.
+			if ( !isNaN( parseInt( selector.charAt( 0 ), 10 ) ) ) {
+				return '\\3' + selector.charAt( 0 ) + ' ' + selector.substring( 1, selector.length );
+			}
+
+			return selector;
+		}
 	};
+
+	// Generates a CSRF token with a given length.
+	//
+	// @since 4.5.6
+	// @param {Number} length
+	// @returns {string}
+	function generateToken( length ) {
+		var randValues = [];
+		var result = '';
+
+		if ( window.crypto && window.crypto.getRandomValues ) {
+			randValues = new Uint8Array( length );
+			window.crypto.getRandomValues( randValues );
+		} else {
+			for ( var i = 0; i < length; i++ ) {
+				randValues.push( Math.floor( Math.random() * 256 ) );
+			}
+		}
+
+		for ( var j = 0; j < randValues.length; j++ ) {
+			var character = tokenCharset.charAt( randValues[ j ] % tokenCharset.length );
+			result += Math.random() > 0.5 ? character.toUpperCase() : character;
+		}
+
+		return result;
+	}
 } )();
 
 // PACKAGER_RENAME( CKEDITOR.tools )

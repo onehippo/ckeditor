@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+# Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
 # For licensing, see LICENSE.md or http://ckeditor.com/license
 
 # Build CKEditor using the default settings (and build.js).
@@ -9,7 +9,7 @@ set -e
 echo "CKBuilder - Builds a release version of ckeditor-dev."
 echo ""
 
-CKBUILDER_VERSION="2.3.0"
+CKBUILDER_VERSION="2.3.1"
 CKBUILDER_URL="http://download.cksource.com/CKBuilder/$CKBUILDER_VERSION/ckbuilder.jar"
 
 PROGNAME=$(basename $0)
@@ -62,7 +62,7 @@ cd ../..
 echo ""
 echo "Starting CKBuilder..."
 
-JAVA_ARGS=${ARGS// -t / } # Remove -t from arrgs
+JAVA_ARGS=${ARGS// -t / } # Remove -t from args
 REVISION=$(git rev-parse --verify --short HEAD)
 
 java -jar ckbuilder/$CKBUILDER_VERSION/ckbuilder.jar --build ../../ release $JAVA_ARGS --version="$VERSION" --revision="$REVISION" --overwrite --skip-omitted-in-build-config
