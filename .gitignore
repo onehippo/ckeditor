@@ -25,3 +25,7 @@ tests/plugins/mathjax/_assets/mathjax/**
 *.css.map
 
 bender-*.log
+
+# Hippo-specific additions
+*.iml
+target
