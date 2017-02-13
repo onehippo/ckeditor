@@ -34,6 +34,7 @@ var CKBUILDER_CONFIG = {
 	plugins: {
 		a11yhelp: 1,
 		about: 1,
+		balloonpanel: 1,
 		basicstyles: 1,
 		bidi: 1,
 		blockquote: 1,
@@ -44,7 +45,7 @@ var CKBUILDER_CONFIG = {
 		colorbutton: 1,
 		colordialog: 1,
 		contextmenu: 1,
-    copyformatting: 1,
+		copyformatting: 1,
 		dialog: 1,
 		dialogadvtab: 1,
 		dialogui: 1,
