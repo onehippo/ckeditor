@@ -666,6 +666,11 @@
 				}
 			}
 
+			// rel attribute
+			if ( data.rel ) {
+				set[ 'rel' ] = data.rel;
+			}
+
 			// Advanced attributes.
 			if ( data.advanced ) {
 				for ( var a in advAttrNames ) {
@@ -703,11 +708,11 @@
 			};
 		},
 
-		
+
 		/**
 		 * Determines whether an element should have a "Display Text" field in the Link dialog.
 		 *
-		 * @since 4.5.11 
+		 * @since 4.5.11
 		 * @param {CKEDITOR.dom.element/null} element Selected element, `null` if none selected or if a ranged selection
 		 * is made.
 		 * @param {CKEDITOR.editor} editor The editor instance for which the check is performed.

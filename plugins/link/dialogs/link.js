@@ -467,6 +467,10 @@
 								data.target = {};
 
 							data.target.type = this.getValue();
+
+							if (data.target.type == '_blank') {
+              						  data.rel = "noopener noreferrer";
+							}
 						}
 					},
 					{
@@ -861,7 +865,7 @@
 						// Use extractHtmlFromRange to remove markup within the selection. Also this method is a little
 						// smarter than range#deleteContents as it plays better e.g. with table cells.
 						editor.editable().extractHtmlFromRange( range );
-						
+
 						range.insertNode( text );
 					}
 
@@ -890,6 +894,10 @@
 
 					element.setAttributes( attributes.set );
 					element.removeAttributes( attributes.removed );
+
+					if(!data.rel){
+						element.removeAttribute( 'rel' );
+					}
 
 					if ( data.linkText && initialLinkText != data.linkText ) {
 						// Display text has been changed.
