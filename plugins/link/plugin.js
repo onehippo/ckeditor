@@ -669,7 +669,6 @@
 			// rel attribute
 			if ( data.rel ) {
 				set[ 'rel' ] = data.rel;
-				alert("setting rel" + data.rel);
 			}
 
 			// Advanced attributes.

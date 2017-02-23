@@ -469,9 +469,8 @@
 							data.target.type = this.getValue();
 
 							if (data.target.type == '_blank')		{
-                data.rel = "noopener noreferrer";
-              }
-              alert("Type: " + data.target.type + " : " + data.rel);
+              						  data.rel = "noopener noreferrer";
+					                }
 						}
 					},
 					{
