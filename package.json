@@ -2,6 +2,12 @@
 	"name": "ckeditor-dev",
 	"version": "4.5.11",
 	"description": "The development version of CKEditor - JavaScript WYSIWYG web text editor.",
+  "dependencies": {
+    "CKEditor-CodeMirror-Plugin": "1.15.0",
+    "CKEditor-TextSelection-Plugin": "1.15.0",
+    "CKEditor-WordCount-Plugin": "1.16.0",
+    "ckeditor-youtube-plugin": "2.1.1"
+  },
 	"devDependencies": {
 		"benderjs-coverage": "^0.2.1",
 		"benderjs": "^0.4.1",
