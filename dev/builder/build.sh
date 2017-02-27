@@ -62,6 +62,10 @@ cd ../..
 echo ""
 echo "Starting CKBuilder..."
 
+echo "Installing dependencies..."
+npm install --prod
+find ../../node_modules/ -maxdepth 2 -type d -iwholename '*CKEditor-*/*' -exec cp -r '{}' ../../plugins/ ';'
+
 JAVA_ARGS=${ARGS// -t / } # Remove -t from args
 REVISION=$(git rev-parse --verify --short HEAD)
 
