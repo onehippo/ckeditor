@@ -20,6 +20,8 @@ var CKBUILDER_CONFIG = {
 		'.gitattributes',
 		'gruntfile.js',
 		'.idea',
+    'Session.vim',
+    '.tags',
 		'ckeditor.iml',
 		'.jscsrc',
 		'.jshintignore',
@@ -27,7 +29,6 @@ var CKBUILDER_CONFIG = {
 		'less',
 		'.mailmap',
 		'node_modules',
-		'package.json',
 		'README.md',
 		'tests'
 	],
