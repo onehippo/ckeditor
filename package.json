@@ -28,6 +28,7 @@
 		"cksource-samples-framework": "^1.0.1"
 	},
 	"scripts": {
+    "prepublish": "find node_modules/ -maxdepth 2 -type d -iwholename '*CKEditor-*/*' -exec cp -r {} plugins/ \\;",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": "CKSource (http://cksource.com/)",
