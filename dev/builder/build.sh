@@ -62,8 +62,7 @@ cd ../..
 echo ""
 echo "Starting CKBuilder..."
 
-echo "Installing dependencies..."
-npm install --prod
+echo "Copy external plugins from node_modules..."
 find ../../node_modules/ -maxdepth 2 -type d -iwholename '*CKEditor-*/*' -exec cp -r '{}' ../../plugins/ ';'
 
 JAVA_ARGS=${ARGS// -t / } # Remove -t from args
