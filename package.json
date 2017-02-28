@@ -1,5 +1,5 @@
 {
-	"name": "ckeditor-dev",
+	"name": "hippo-ckeditor-dev",
 	"version": "4.5.11-h2-SNAPSHOT",
 	"description": "The development version of CKEditor - JavaScript WYSIWYG web text editor.",
 	"devDependencies": {
