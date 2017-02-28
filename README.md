@@ -64,6 +64,8 @@ branch must be pushed to origin, so other people can fetch it too. For example, 
 
 Prerequisites:
 
+  - [NodeJS (6.x.x)](https://nodejs.org/)
+  - [npm](https://www.npmjs.com/)
   - [Maven](http://maven.apache.org/)
 
 Deployment command:
@@ -75,21 +77,21 @@ Deployment command:
 Only a part of each external plugin's code has to be included in the Hippo CKEditor build,
 i.e. the part that should to into the CKEditor subdirectory `plugins/XXX`.
 
-The `dev/builder/build.sh`script makes sure the dependencies are pulled in via node package manager (npm) and then copied to
-the plugins directory.
+The Maven build makes sure the dependencies are pulled in via node package manager (npm) and then copied to
+the plugins directory using npm and the `dev/builder/build.sh` script.
 
 ### Adding a new external plugin
 
-Adding an external plugin can be done by including them in the 'dependencies'
-property of the package.json. If the external plugin does not contain a (valid)
-package.json file then you need to fork the github repository under the onehippo
-github group and add the package.json yourself.
+Adding an external plugin can be done by including them in the `dependencies`
+property of the `package.json.` If the external plugin does not contain a (valid)
+`package.json` file then you need to fork the github repository under the onehippo
+github group and add the `package.json` yourself.
 
 ### Updating an external plugin
 
 Updating an external plugin can be done by publishing a new version of the
 plugin (see that plugin's README) to the hippo npm registry and then bumping to that version in the
-package.json.
+`package.json`.
 
 ## The remainder of this file contains the unmodified CKEditor README
 
