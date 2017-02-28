@@ -72,7 +72,7 @@
             </goals>
             <configuration>
               <executable>npm</executable>
-              <commandlineArgs>install --prod</commandlineArgs>
+              <commandlineArgs>install</commandlineArgs>
             </configuration>
           </execution>
           <execution>
