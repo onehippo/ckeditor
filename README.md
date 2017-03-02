@@ -72,6 +72,17 @@ Deployment command:
 
     mvn clean deploy
 
+### Publication to Hippo npm registry
+
+Prerequisites:
+
+  - [NodeJS (6.x.x)](https://nodejs.org/)
+  - [npm](https://www.npmjs.com/)
+
+Publish command:
+
+    npm run ckpublish
+
 ## External plugin management
 
 Only a part of each external plugin's code has to be included in the Hippo CKEditor build,

@@ -1,14 +1,12 @@
 {
-	"name": "ckeditor-dev",
-	"version": "4.5.11",
+	"name": "hippo-ckeditor-dev",
+	"version": "4.5.11-h2-SNAPSHOT",
 	"description": "The development version of CKEditor - JavaScript WYSIWYG web text editor.",
-  "dependencies": {
+	"devDependencies": {
     "CKEditor-CodeMirror-Plugin": "1.15.0",
     "CKEditor-TextSelection-Plugin": "1.15.0",
     "CKEditor-WordCount-Plugin": "1.16.0",
-    "ckeditor-youtube-plugin": "2.1.1"
-  },
-	"devDependencies": {
+    "ckeditor-youtube-plugin": "2.1.1",
 		"benderjs-coverage": "^0.2.1",
 		"benderjs": "^0.4.1",
 		"benderjs-jquery": "^0.3.0",
@@ -28,6 +26,11 @@
 		"cksource-samples-framework": "^1.0.1"
 	},
 	"scripts": {
+    "prestart": "npm install",
+    "start": "dev/builder/build.sh $npm_package_version",
+    "preckpublish": "npm start",
+    "ckpublish": "cp -r dev/builder/release/ckeditor ./dist && npm publish",
+    "postckpublish": "rm -rf ./dist",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": "CKSource (http://cksource.com/)",
@@ -37,5 +40,13 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/ckeditor/ckeditor-dev.git"
-	}
+	},
+  "publishConfig": {
+    "registry": "https://maven.onehippo.com/npm-public/"
+  },
+  "files": [
+    "dist/",
+    "LICENSE.md",
+    "CHANGES.md"
+  ]
 }
