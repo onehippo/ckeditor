@@ -10,12 +10,12 @@ The build includes only the plugins used in Hippo CMS (see dev/builder/build-con
 
 ### External plugins
 
-The following external plugins are included:
+The following external plugins are pulled in:
 
-  - [codemirror](https://github.com/w8tcha/CKEditor-CodeMirror-Plugin)
-  - [textselection] (https://github.com/w8tcha/CKEditor-TextSelection-Plugin)
-  - [wordcount](https://github.com/w8tcha/CKEditor-WordCount-Plugin)
-  - [youtube](https://github.com/fonini/ckeditor-youtube-plugin)
+  - [codemirror](https://github.com/onehippo/CKEditor-CodeMirror-Plugin)
+  - [wordcount](https://github.com/onehippo/CKEditor-WordCount-Plugin)
+  - [textselection](https://github.com/onehippo/CKEditor-TextSelection-Plugin)
+  - [youtube](https://github.com/onehippo/ckeditor-youtube-plugin)
 
 ## Versions
 
@@ -30,28 +30,28 @@ A release is available in a tag are named `hippo/<version>`, e.g. `hippo/4.3.0-h
 The script `/dev/builder/build.sh` needs a 'build version' parameter, which is burned into the generated code.
 Hippo CMS uses the same version number as in the tag name (e.g. '4.3.0-h1').
 
-### Upstream changes 
+### Upstream changes
 
-To get upstream changes, first add a remote for the upstream CKEditor repository: 
+To get upstream changes, first add a remote for the upstream CKEditor repository:
 
     git remote add -f upstream https://github.com/ckeditor/ckeditor-dev.git
-    
+
 Upstream changes can now be merged into the current hippo-specific branch. Make sure to merge the upstream branch
 with the same version number. For example:
-  
+
     git fetch upstream
     git checkout hippo/4.3.x
     git merge upstream/release/4.3.x
 
-When a new patch version is released upstream, its tag can be merged into the matching hippo-specific branch. 
+When a new patch version is released upstream, its tag can be merged into the matching hippo-specific branch.
 For example, to merge upstream tag 4.4.5:
-    
+
     git fetch upstream
     git checkout hippo/4.4.x
-    git merge 4.4.5 
-    
-When a new minor version is released upstream, a new hippo-specific branch should be created based on the upstream 
-branch. All hippo-specific customizations in the previous branch can then be merged into the new one. The new 
+    git merge 4.4.5
+
+When a new minor version is released upstream, a new hippo-specific branch should be created based on the upstream
+branch. All hippo-specific customizations in the previous branch can then be merged into the new one. The new
 branch must be pushed to origin, so other people can fetch it too. For example, to upgrade from 4.3.x to 4.4.x:
 
     git fetch upstream
@@ -59,113 +59,39 @@ branch must be pushed to origin, so other people can fetch it too. For example, 
     git checkout -b hippo/4.4.x
     git merge hippo/4.3.x
     git push origin hippo/4.4.x
-    
+
 ### Deployment to Nexus
 
 Prerequisites:
 
+  - [NodeJS (6.x.x)](https://nodejs.org/)
+  - [npm](https://www.npmjs.com/)
   - [Maven](http://maven.apache.org/)
 
 Deployment command:
 
     mvn clean deploy
-    
+
 ## External plugin management
 
 Only a part of each external plugin's code has to be included in the Hippo CKEditor build,
-i.e. the part that should to into the CKEditor subdirectory `plugins/XXX`. The history of that
-part is kept in a branch `XXX/plugin`. The files are included with `git read-tree` under the 
-directory `plugins/XXX`.
+i.e. the part that should to into the CKEditor subdirectory `plugins/XXX`.
 
-For example, say all CodeMirror plugin code is located in a remote branch `codemirror/master`
-under the directory `codemirror`. All commits that affect that subdirectory are kept
-in the branch `codemirror/plugin`. The code in the branch `codemirror/plugin` is then
-included in a Hippo CKEditor branch under the directory `plugins/codemirror`.
-
-### Remotes for existing plugins
-
-Use the following commands to add remotes for the upstream repositories of all external plugins:
- 
-    git remote add -f upstream-codemirror    https://github.com/w8tcha/CKEditor-CodeMirror-Plugin.git
-    git remote add -f upstream-textselection https://github.com/w8tcha/CKEditor-TextSelection-Plugin
-    git remote add -f upstream-youtube       https://github.com/fonini/ckeditor-youtube-plugin.git
-    git remote add -f upstream-wordcount     https://github.com/w8tcha/CKEditor-WordCount-Plugin.git
+The Maven build makes sure the dependencies are pulled in via node package manager (npm) and then copied to
+the plugins directory using npm and the `dev/builder/build.sh` script.
 
 ### Adding a new external plugin
 
-The following example adds a fictitious external plugin called 'foo' to the Hippo CKEditor 4.3.x build.
-Its Git repository contains a subdirectory `code` that should go into the CKEditor directory `plugins/example`.
-
-First add the remote repository of the example plugin to your local Git repository: 
-
-    git remote add -f upstream-foo <remote url>
-  
-Second, create a local branch for the master branch of the plugin:     
-    
-    git checkout -b foo/master upstream-foo/master
-    
-Then create a separate branch 'foo/plugin' for the part of the plugin that should go into the 
-'plugins' directory of CKEditor. In our example that's everything in the subdirectory 'code':
-
-    git subtree split --prefix=code/ -b foo/plugin
-    
-Finally, add the extracted part of the plugin to the 'plugins' directory of CKEditor:
-    
-    git checkout hippo/4.4.x
-    git read-tree --prefix=plugins/foo/ -u foo/plugin
-
-Add the 'foo' plugin to the file `dev/builder/build-config.js` to include it in the Hippo CKEditor build.
+Adding an external plugin can be done by including them in the `dependencies`
+property of the `package.json.` If the external plugin does not contain a (valid)
+`package.json` file then you need to fork the github repository under the onehippo
+github group and add the `package.json` yourself.
 
 ### Updating an external plugin
 
-The following example updates the 'foo' plugin with the latest changes from upstream.
-
-If it does not exist yet, create a local branch `foo/master` that tracks the upstream master branch:
- 
-    git fetch upstream-foo
-    git checkout -b foo/master upstream-foo/master
-    
-Otherwise just pull changes from upstream:
-
-    git checkout foo/master    
-    git pull
-    
-Next, create a branch 'foo/new-plugin' with the new plugin code: 
-    
-    git subtree split --prefix=code/ -b foo/new-plugin
-
-Now rebase the old plugin code onto the new plugin to avoid merge conflicts:
-
-    git checkout foo/new-plugin
-    git rebase foo/plugin
-    
-Then merge the new plugin code into the plugin branch:
-
-    git checkout foo/plugin
-    git merge foo/new-plugin
-
-Now we can include the updated plugin into the CKEditor tree.
-First remove the existing plugin from the CKEditor plugins directory:    
-    
-    git checkout hippo/4.4.x
-    rm -rf plugins/foo
-    git commit -a -m 'Remove foo plugin version 1'
-    
-Next, add the updated plugin from the branch again:
-     
-    git read-tree --prefix=plugins/foo/ -u foo/plugin
-    
-Push the changes in both the CKEditor branch and the plugin branch,
-so it's clear what the history is of the included plugin.
-
-    git checkout hippo/4.4.x
-    git push
-    git checkout foo/plugin
-    git push
-
-Finally, remove the new plugin branch since it is no longer needed:
-
-    git branch -D foo/new-plugin
+Updating an external plugin can be done by publishing a new version of the
+plugin (see that plugin's README) to the hippo npm registry and then bumping to that version in the
+`package.json`.
 
 ## The remainder of this file contains the unmodified CKEditor README
 
