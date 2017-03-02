@@ -29,8 +29,8 @@
     "prestart": "npm install",
     "start": "dev/builder/build.sh $npm_package_version",
     "preckpublish": "npm start",
-    "ckpublish": "cp -r dev/builder/release/ckeditor ./ && npm publish",
-    "postckpublish": "rm -rf ./ckeditor",
+    "ckpublish": "cp -r dev/builder/release/ckeditor ./dist && npm publish",
+    "postckpublish": "rm -rf ./dist",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": "CKSource (http://cksource.com/)",
@@ -45,7 +45,7 @@
     "registry": "https://maven.onehippo.com/npm-public/"
   },
   "files": [
-    "ckeditor/",
+    "dist/",
     "LICENSE.md",
     "CHANGES.md"
   ]
