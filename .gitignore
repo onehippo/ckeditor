@@ -32,3 +32,4 @@ plugins/codemirror
 plugins/textselection
 plugins/wordcount
 plugins/youtube
+dist/
