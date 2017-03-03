@@ -2,7 +2,7 @@
   "non-interactive": true,
   "verbose": true,
   "increment": "prerelease",
-  "prereleaseId": "SNAPSHOT",
+  "prereleaseId": "h2-SNAPSHOT",
   "buildCommand": "npm start",
   "requireCleanWorkingDir": true,
   "dist": {
