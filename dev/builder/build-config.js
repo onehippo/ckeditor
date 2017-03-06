@@ -29,15 +29,7 @@ var CKBUILDER_CONFIG = {
 		'node_modules',
 		'package.json',
 		'README.md',
-		'tests',
-    '.npmrc',
-    'pom.xml',
-    'maven-distribution-optimized.xml',
-    'maven-distribution-sources.xml',
-    '.tags',
-    '.tags.lock',
-    '.tags.temp',
-    'Session.vim',
+		'tests'
 	],
 	plugins: {
 		a11yhelp: 1,
