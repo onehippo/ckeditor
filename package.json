@@ -1,6 +1,7 @@
 {
 	"name": "ckeditor-dev",
 	"version": "4.5.11",
+	"private": true,
 	"description": "The development version of CKEditor - JavaScript WYSIWYG web text editor.",
   "dependencies": {
     "CKEditor-CodeMirror-Plugin": "1.15.0",
