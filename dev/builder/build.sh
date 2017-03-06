@@ -63,7 +63,10 @@ echo ""
 echo "Starting CKBuilder..."
 
 echo "Copy external plugins from node_modules..."
-find ../../node_modules/ -maxdepth 2 -type d -iwholename '*CKEditor-*/*' -exec cp -r '{}' ../../plugins/ ';'
+cp -r ../../node_modules/CKEditor-CodeMirror-Plugin/codemirror ../../plugins/
+cp -r ../../node_modules/CKEditor-TextSelection-Plugin/textselection ../../plugins/
+cp -r ../../node_modules/CKEditor-WordCount-Plugin/wordcount ../../plugins/
+cp -r ../../node_modules/ckeditor-youtube-plugin/youtube ../../plugins/
 
 JAVA_ARGS=${ARGS// -t / } # Remove -t from args
 REVISION=$(git rev-parse --verify --short HEAD)
