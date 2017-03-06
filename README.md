@@ -72,24 +72,7 @@ Deployment command:
 
     mvn clean deploy
 
-### Publishing version to Hippo npm registry
-
-Prerequisites:
-
-  - [NodeJS (6.x.x)](https://nodejs.org/)
-  - [npm](https://www.npmjs.com/)
-  - [release-it](https://github.com/webpro/release-it)
-
-Install 'release-it' globally
-`npm install release-it -g`
-
-First release new version:
-`release-it [new version] -m "[issue number] Release [new version]"`
-
-Then ready for new development iteration
-`release-it [new development version] --prereleaseId="SNAPSHOT" --npm.tag="[new dist-tag]" -m "[relevant issue] Prepare for next development iteration"`
-
-### Publishing development version to Hippo npm registry
+### Publication to Hippo npm registry
 
 Prerequisites:
 
@@ -98,7 +81,7 @@ Prerequisites:
 
 Publish command:
 
-    npm run publish-snapshot
+    npm run ckpublish
 
 ## External plugin management
 
