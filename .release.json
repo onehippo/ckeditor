@@ -6,8 +6,8 @@
   "buildCommand": "npm start",
   "requireCleanWorkingDir": true,
   "dist": {
-    "baseDir": "./",
-    "files": ["dist/**/*"]
+    "baseDir": "dist",
+    "files": ["**/*"]
   },
   "npm": {
     "publish": true,
