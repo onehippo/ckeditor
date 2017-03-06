@@ -10,11 +10,11 @@ The build includes only the plugins used in Hippo CMS (see dev/builder/build-con
 
 ### External plugins
 
-The following external plugins are pulled in:
+The following external plugins are included:
 
   - [codemirror](https://github.com/onehippo/CKEditor-CodeMirror-Plugin)
-  - [wordcount](https://github.com/onehippo/CKEditor-WordCount-Plugin)
   - [textselection](https://github.com/onehippo/CKEditor-TextSelection-Plugin)
+  - [wordcount](https://github.com/onehippo/CKEditor-WordCount-Plugin)
   - [youtube](https://github.com/onehippo/ckeditor-youtube-plugin)
 
 ## Versions
@@ -86,6 +86,10 @@ Adding an external plugin can be done by including them in the `dependencies`
 property of the `package.json.` If the external plugin does not contain a (valid)
 `package.json` file then you need to fork the github repository under the onehippo
 github group and add the `package.json` yourself.
+
+Make sure to copy the plugin code from `node_modules/` to `plugins/` in `dev/builder/build.sh`.
+Add the plugin to the configuration of the Maven clean plugin in `pom.xml` so the copied sources 
+will be cleaned too.
 
 ### Updating an external plugin
 
