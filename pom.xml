@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright 2014-2016 Hippo B.V. (http://www.onehippo.com)
+  Copyright 2014-2017 Hippo B.V. (http://www.onehippo.com)
   For licensing, see LICENSE.md or http://ckeditor.com/license
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -53,6 +53,16 @@
         <version>${maven.plugin.clean.version}</version>
         <configuration>
           <filesets>
+            <fileset>
+              <directory>node_modules</directory>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+            <fileset>
+              <directory>plugins/codemirror</directory>
+              <directory>plugins/textselection</directory>
+              <directory>plugins/youtube</directory>
+              <directory>plugins/wordcount</directory>
+            </fileset>
             <fileset>
               <directory>dev/builder/release</directory>
             </fileset>
