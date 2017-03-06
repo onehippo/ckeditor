@@ -1,6 +1,6 @@
 {
   "name": "hippo-ckeditor-dev",
-  "version": "4.5.11-h2-SNAPSHOT.4",
+  "version": "4.5.11-h2-SNAPSHOT.5",
   "description": "The development version of CKEditor - JavaScript WYSIWYG web text editor.",
   "devDependencies": {
     "release-it": "2.5.4",
