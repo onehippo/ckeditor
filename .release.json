@@ -11,6 +11,6 @@
   },
   "npm": {
     "publish": true,
-    "tag": "latest"
+    "tag": "snapshot-4.5.x"
   }
 }
