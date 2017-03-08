@@ -4,10 +4,10 @@
 	"private": true,
 	"description": "The development version of CKEditor - JavaScript WYSIWYG web text editor.",
   "dependencies": {
-    "CKEditor-CodeMirror-Plugin": "1.15.0",
-    "CKEditor-TextSelection-Plugin": "1.15.0",
-    "CKEditor-WordCount-Plugin": "1.16.0",
-    "ckeditor-youtube-plugin": "2.1.1"
+    "hippo-ckeditor-codemirror-plugin": "1.13.0",
+    "hippo-ckeditor-textselection-plugin": "1.06.0",
+    "hippo-ckeditor-wordcount-plugin": "0.13.0",
+    "hippo-ckeditor-youtube-plugin": "2.0.9"
   },
 	"devDependencies": {
 		"benderjs-coverage": "^0.2.1",
