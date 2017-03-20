@@ -10,6 +10,7 @@
     <groupId>org.onehippo.cms7</groupId>
     <artifactId>hippo-cms7-project</artifactId>
     <version>26</version>
+    <relativePath />
   </parent>
 
   <name>Hippo CKEditor</name>
