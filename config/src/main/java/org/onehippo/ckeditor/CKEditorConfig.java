@@ -25,6 +25,19 @@ public class CKEditorConfig {
     private CKEditorConfig() {
     }
 
+    /**
+     * Various CKEDITOR.config property names.
+     */
+    public static final String CONTENTS_CSS = "contentsCss";
+    public static final String CUSTOM_CONFIG = "customConfig";
+    public static final String EXTRA_PLUGINS = "extraPlugins";
+    public static final String KEYSTROKES = "keystrokes";
+    public static final String LANGUAGE = "language";
+    public static final String STYLES_SET = "stylesSet";
+
+    /**
+     * Default config for formatted text fields.
+     */
     public static final String DEFAULT_FORMATTED_TEXT_CONFIG = "{"
             // do not html encode but utf-8 encode hence entities = false
             + "  entities: false,"
@@ -41,6 +54,9 @@ public class CKEditorConfig {
             + "  ]"
             + "}";
 
+    /**
+     * Default config for rich text fields.
+     */
     public static final String DEFAULT_RICH_TEXT_CONFIG = "{"
             // do not html encode but utf-8 encode hence entities = false
             + "  entities: false,"
