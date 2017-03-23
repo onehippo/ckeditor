@@ -31,6 +31,7 @@
   <name>Hippo CKEditor Config</name>
 
   <properties>
+    <jslint.plugin.version>1.0.1</jslint.plugin.version>
     <junit.version>4.5</junit.version>
   </properties>
 
@@ -49,5 +50,47 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jslint-maven-plugin</artifactId>
+        <version>${jslint.plugin.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jslint</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <predefinedVars>CKEDITOR</predefinedVars>
+          <sourceJsFolder>${basedir}/src/main/resources</sourceJsFolder>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>create-optimized-resources</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/classes/ckeditor/optimized</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${basedir}/src/main/resources/ckeditor</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
