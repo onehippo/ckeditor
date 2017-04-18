@@ -67,12 +67,15 @@ public class CKEditorConfig {
             + "  dialog_buttonsOrder: 'ltr',"
             + "  dialog_noConfirmCancel: true,"
             + "  extraAllowedContent: 'embed[allowscriptaccess,height,src,type,width]; img[border,hspace,vspace]; object[align,data,height,id,title,type,width]; p[align]; param[name,value]; table[width]; td[valign,width]; th[valign,width];',"
-            + "  keystrokes: ["
+		    // TODO: Temporary fix for CHANNELMGR-1237: the hippopicker plugin will be refactored to enable usage outside
+			// of the CMS (e.g. channel-manager), until that is finished the configuration is hardcoded below.
+            + "  hippopicker: { internalLink: {callbackUrl: 'TODO'}, image: {callbackUrl: 'TODO'}},"
+			+ "  keystrokes: ["
             + "    [ 'Ctrl', 'm', 'maximize' ],"
             + "    [ 'Alt', 'b', 'showblocks' ]"
             + "  ],"
             + "  linkShowAdvancedTab: false,"
-            + "  plugins: 'a11yhelp,basicstyles,button,clipboard,codemirror,contextmenu,dialog,dialogadvtab,dialogui,divarea,elementspath,enterkey,entities,floatingspace,floatpanel,htmlwriter,indent,indentblock,indentlist,justify,link,list,listblock,liststyle,magicline,maximize,menu,menubutton,panel,panelbutton,pastefromword,pastetext,popup,removeformat,resize,richcombo,showblocks,showborders,specialchar,stylescombo,tab,table,tableresize,tabletools,textselection,toolbar,undo,youtube',"
+            + "  plugins: 'a11yhelp,basicstyles,button,clipboard,codemirror,contextmenu,dialog,dialogadvtab,dialogui,divarea,elementspath,enterkey,entities,floatingspace,floatpanel,hippopicker,htmlwriter,indent,indentblock,indentlist,justify,link,list,listblock,liststyle,magicline,maximize,menu,menubutton,panel,panelbutton,pastefromword,pastetext,popup,removeformat,resize,richcombo,showblocks,showborders,specialchar,stylescombo,tab,table,tableresize,tabletools,textselection,toolbar,undo,youtube',"
             + "  removeFormatAttributes: 'style,lang,width,height,align,hspace,valign',"
             + "  title: false,"
             + "  toolbarGroups: ["
