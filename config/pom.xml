@@ -31,18 +31,24 @@
   <name>Hippo CKEditor Config</name>
 
   <properties>
+    <commons-lang.version>2.6</commons-lang.version>
     <jslint.plugin.version>1.0.1</jslint.plugin.version>
     <junit.version>4.5</junit.version>
   </properties>
 
   <dependencies>
-    <!-- Test -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>${jackson2.version}</version>
-      <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>${commons-lang.version}</version>
+    </dependency>
+
+    <!-- Test -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
