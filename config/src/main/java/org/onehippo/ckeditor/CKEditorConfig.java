@@ -15,7 +15,15 @@
  */
 package org.onehippo.ckeditor;
 
-import java.util.Locale;
+import java.io.IOException;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Default configuration of CKEditor fields in Hippo CMS.
@@ -25,6 +33,8 @@ public class CKEditorConfig {
     private CKEditorConfig() {
     }
 
+    private static final Logger log = LoggerFactory.getLogger(CKEditorConfig.class);
+    
     /**
      * Various CKEDITOR.config property names.
      */
@@ -99,14 +109,57 @@ public class CKEditorConfig {
 
     private static final String STYLES_SET_LANGUAGE_PARAM = "{language}";
 
-    public static String getStylesSet(final String customStylesSet, final Locale locale) {
-        return customStylesSet.replace(STYLES_SET_LANGUAGE_PARAM, locale.getLanguage());
+    public static ObjectNode combineConfig(final String defaultJson, final String overlayedJson, final String appendedJson) throws IOException {
+        final ObjectNode json = Json.object(defaultJson);
+        logConfig("Default CKEditor config", json);
+
+        Json.overlay(json, checkJson("overlayed", overlayedJson));
+        logConfig("Overlayed CKEditor config", json);
+
+        Json.append(json, checkJson("appended", appendedJson));
+        logConfig("Final CKEditor config", json);
+
+        return json;
     }
 
-    public static String getDefaultStylesSet(final Locale locale) {
-        final String styleName = "hippo_" + locale.getLanguage();
+    private static JsonNode checkJson(final String name, final String json) {
+        try {
+            return Json.object(json);
+        } catch (IOException e) {
+            log.warn("Ignoring CKEditor " + name + " configuration. Not valid JSON: '{}'", json, e);
+        }
+        return Json.object();
+    }
+
+    private static void logConfig(final String name, final ObjectNode config) {
+        if (log.isDebugEnabled()) {
+            log.debug(name + "\n" + Json.prettyString(config));
+        }
+    }
+
+    public static ObjectNode setDefaults(final ObjectNode config, final String language) {
+        config.put(CKEditorConfig.LANGUAGE, language);
+
+        // convert Hippo-specific 'declarative' keystrokes to numeric ones
+        final JsonNode declarativeAndNumericKeystrokes = config.get(CKEditorConfig.KEYSTROKES);
+        final ArrayNode numericKeystrokes = DeclarativeKeystrokesConverter.convertToNumericKeystrokes(declarativeAndNumericKeystrokes);
+        config.set(CKEditorConfig.KEYSTROKES, numericKeystrokes);
+
+        // load the localized hippo styles if no other styles are specified
+        final String stylesSet = config.has(STYLES_SET) ? config.get(STYLES_SET).asText() : defaultStylesSet(language);
+        final String localizedStylesSet = stylesSet.replace(STYLES_SET_LANGUAGE_PARAM, language);
+        config.put(CKEditorConfig.STYLES_SET, localizedStylesSet);
+
+        // disable custom config loading if not configured
+        if (!config.has(CUSTOM_CONFIG)) {
+            config.put(CUSTOM_CONFIG, StringUtils.EMPTY);
+        }
+
+        return config;
+    }
+
+    private static String defaultStylesSet(final String language) {
+        final String styleName = "hippo_" + language;
         return styleName + ":./hippostyles.js";
     }
-
-
 }

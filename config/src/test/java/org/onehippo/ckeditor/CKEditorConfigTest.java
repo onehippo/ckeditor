@@ -16,11 +16,11 @@
 package org.onehippo.ckeditor;
 
 import java.io.IOException;
-import java.util.Locale;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -52,16 +52,75 @@ public class CKEditorConfigTest {
     }
 
     @Test
-    public void customStylesSetReplacesLanguageParameter() {
-        final Locale zn_CN = new Locale("zh", "CN");
-        final String stylesSet = CKEditorConfig.getStylesSet("mystyle_{language}:./mystyles.js", zn_CN);
-        assertEquals("mystyle_zh:./mystyles.js", stylesSet);
+    public void combineConfig() throws IOException {
+        final String defaultJson = "{"
+                + "  codemirror: {"
+                + "    autoFormatOnStart: true"
+                + "  },"
+                + "  ignoreEmptyParagraph: false,"
+                + "  keystrokes: [ [ 77, 'maximize' ] ],"
+                + "  plugins: 'foo,bar'"
+                + "}";
+        final String overlayedJson = "{"
+                + "  codemirror: {"
+                + "    autoFormatOnStart: false"
+                + "  },"
+                + "  ignoreEmptyParagraph: true"
+                + "}";
+        final String appendedJson = "{"
+                + "  keystrokes: [ [ 88, 'showblocks' ] ],"
+                + "  plugins: 'myplugin'"
+                + "}";
+        final ObjectNode combined = CKEditorConfig.combineConfig(defaultJson, overlayedJson, appendedJson);
+        assertEquals("{\n"
+                + "  codemirror : {\n"
+                + "    autoFormatOnStart : false\n"
+                + "  },\n"
+                + "  ignoreEmptyParagraph : true,\n"
+                + "  keystrokes : [ [ 77, \"maximize\" ], [ 88, \"showblocks\" ] ],\n"
+                + "  plugins : \"foo,bar,myplugin\"\n"
+                + "}",
+                Json.prettyString(combined));
+    }
+
+    @Test
+    public void setDefaultLanguage() throws IOException {
+        ObjectNode result = CKEditorConfig.setDefaults(Json.object(), "nl");
+        assertEquals("nl", result.get("language").asText());
+    }
+
+    @Test
+    public void convertKeystrokes() throws IOException {
+        final ObjectNode config = Json.object("{ keystrokes: [ [ 88, 'foo' ], [ 'Ctrl', 'B', 'bar' ] ] }");
+        final ObjectNode result = CKEditorConfig.setDefaults(config, "nl");
+        assertEquals("[ [ 88, \"foo\" ], [ 1114178, \"bar\" ] ]",
+                Json.prettyString(result.get("keystrokes")));
+    }
+
+    @Test
+    public void customStylesSetReplacesLanguageParameter() throws IOException {
+        final ObjectNode config = Json.object("{ stylesSet: 'mystyle_{language}:./mystyles.js' }");
+        final ObjectNode result = CKEditorConfig.setDefaults(config, "nl");
+        assertEquals("mystyle_nl:./mystyles.js", result.get("stylesSet").asText());
     }
 
     @Test
     public void defaultStylesSetIncludesLanguage() {
-        final Locale zn_CN = new Locale("zh", "CN");
-        final String stylesSet = CKEditorConfig.getDefaultStylesSet(zn_CN);
-        assertEquals("hippo_zh:./hippostyles.js", stylesSet);
+        final ObjectNode config = Json.object();
+        final ObjectNode result = CKEditorConfig.setDefaults(config, "nl");
+        assertEquals("hippo_nl:./hippostyles.js", result.get("stylesSet").asText());
+    }
+
+    @Test
+    public void disableCustomConfigWhenNotSet() {
+        ObjectNode result = CKEditorConfig.setDefaults(Json.object(), "nl");
+        assertEquals("", result.get("customConfig").asText());
+    }
+
+    @Test
+    public void leaveCustomConfigWhenSet() throws IOException {
+        final ObjectNode config = Json.object("{ customConfig: 'myconfig.js' }");
+        ObjectNode result = CKEditorConfig.setDefaults(config, "nl");
+        assertEquals("myconfig.js", result.get("customConfig").asText());
     }
 }
