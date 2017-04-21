@@ -2,6 +2,7 @@ package org.onehippo.ckeditor;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.easymock.EasyMock.createMock;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -284,5 +286,34 @@ public class JsonTest {
         object.put("test", initialValue);
         Json.appendToCommaSeparatedString(object, "test", appendedValue);
         return object.get("test").asText();
+    }
+
+    @Test
+    public void prettyStringForEmptyObject() throws JsonProcessingException {
+        assertEquals("{ }", Json.prettyString(object));
+    }
+
+    @Test
+    public void prettyStringForNullThrowsException() throws JsonProcessingException {
+        assertEquals("null", Json.prettyString(null));
+    }
+
+    @Test
+    public void prettyStringForObject() throws IOException {
+        assertEquals("{\n"
+                        + "  value : 1,\n"
+                        + "  child : {\n"
+                        + "    nestedValue1 : \"text\",\n"
+                        + "    nestedValue2 : true\n"
+                        + "  }\n"
+                        + "}",
+                Json.prettyString(Json.object("{ value: 1, child: { nestedValue1: 'text', nestedValue2: true } }"))
+        );
+    }
+
+    @Test
+    public void prettyStringFallsBackToUglyStringOnError() throws IOException {
+        final JsonNode json = createMock("MockedJsonNode", JsonNode.class);
+        assertEquals("MockedJsonNode", Json.prettyString(json));
     }
 }
