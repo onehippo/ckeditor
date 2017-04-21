@@ -36,6 +36,13 @@ public class CKEditorConfig {
     public static final String STYLES_SET = "stylesSet";
 
     /**
+     * CKEDITOR constants for keyboard shortcuts
+     */
+    public static final int CTRL = 0x110000;
+    public static final int SHIFT = 0x220000;
+    public static final int ALT = 0x440000;
+
+    /**
      * Default config for formatted text fields.
      */
     public static final String DEFAULT_FORMATTED_TEXT_CONFIG = "{"
