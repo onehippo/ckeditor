@@ -90,6 +90,7 @@ var CKBUILDER_CONFIG = {
 		resize: 1,
 		richcombo: 1,
 		selectall: 1,
+		sharedspace: 1,
 		showblocks: 1,
 		showborders: 1,
 		smiley: 1,
