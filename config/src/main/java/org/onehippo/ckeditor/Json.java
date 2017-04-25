@@ -196,18 +196,16 @@ public class Json {
 
             if (oldValue == null || oldValue.isNull()) {
                 object.set(field, newValue);
-            } else {
-                if (oldValue.isObject() && newValue.isObject()) {
-                    append((ObjectNode) oldValue, newValue);
-                } else if (oldValue.isTextual() && newValue.isTextual()) {
-                    appendToCommaSeparatedString(object, field, newValue.asText());
-                } else if (oldValue.isArray()) {
-                    if (newValue.isArray()) {
-                        ArrayNode concatenated = concatArrays(oldValue, newValue);
-                        object.set(field, concatenated);
-                    } else {
-                        ((ArrayNode) oldValue).add(newValue);
-                    }
+            } else if (oldValue.isObject() && newValue.isObject()) {
+                append((ObjectNode) oldValue, newValue);
+            } else if (oldValue.isTextual() && newValue.isTextual()) {
+                appendToCommaSeparatedString(object, field, newValue.asText());
+            } else if (oldValue.isArray()) {
+                if (newValue.isArray()) {
+                    ArrayNode concatenated = concatArrays(oldValue, newValue);
+                    object.set(field, concatenated);
+                } else {
+                    ((ArrayNode) oldValue).add(newValue);
                 }
             }
         }
