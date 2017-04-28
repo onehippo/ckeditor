@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class CKEditorConfigTest {
 
@@ -81,6 +82,37 @@ public class CKEditorConfigTest {
                 + "  plugins : \"foo,bar,myplugin\"\n"
                 + "}",
                 Json.prettyString(combined));
+    }
+
+
+    @Test
+    public void extraAllowedContentOfRichTextFieldsCanBeExtended() throws IOException {
+        // in addition to the default allowed content, allow a 'class' attribute on 'em' elements (new element)
+        // and an extra 'id' property on img elements (new property on existing element in default config)
+        final String appendedJson = "{"
+                + "  extraAllowedContent: {"
+                + "    em: {"
+                + "      attributes: 'class'"
+                + "    },"
+                + "    img: {"
+                + "      attributes: 'id'"
+                + "    }"
+                + "  }"
+                + "}";
+        final ObjectNode combined = CKEditorConfig.combineConfig(CKEditorConfig.DEFAULT_RICH_TEXT_CONFIG, "", appendedJson);
+        final JsonNode extraAllowedContent = combined.get("extraAllowedContent");
+
+        // our new 'em' rule is in there
+        assertTrue(extraAllowedContent.has("em"));
+        assertEquals("class", extraAllowedContent.get("em").get("attributes").asText());
+
+        // the default rules for 'img' is extended to also allow the 'id' attribute
+        assertTrue(extraAllowedContent.has("img"));
+        assertEquals("border,hspace,vspace,id", extraAllowedContent.get("img").get("attributes").asText());
+
+        // the default rule for 'p' is unaffected
+        assertTrue(extraAllowedContent.has("p"));
+        assertEquals("align", extraAllowedContent.get("p").get("attributes").asText());
     }
 
     @Test

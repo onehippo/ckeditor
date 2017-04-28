@@ -83,7 +83,32 @@ public class CKEditorConfig {
             + "  contentsCss: ['ckeditor/hippocontents.css'],"
             + "  dialog_buttonsOrder: 'ltr',"
             + "  dialog_noConfirmCancel: true,"
-            + "  extraAllowedContent: 'embed[allowscriptaccess,height,src,type,width]; img[border,hspace,vspace]; object[align,data,height,id,title,type,width]; p[align]; param[name,value]; table[width]; td[valign,width]; th[valign,width];',"
+            + "  extraAllowedContent: {"
+            + "    embed: {"
+            + "      attributes: 'allowscriptaccess,height,src,type,width'"
+            + "    },"
+            + "    img: {"
+            + "      attributes: 'border,hspace,vspace'"
+            + "    },"
+            + "    object: {"
+            + "      attributes: 'align,data,height,id,title,type,width'"
+            + "    },"
+            + "    p: {"
+            + "      attributes: 'align'"
+            + "    },"
+            + "    param: {"
+            + "      attributes: 'name,value'"
+            + "    },"
+            + "    table: {"
+            + "      attributes: 'width'"
+            + "    },"
+            + "    td: {"
+            + "      attributes: 'valign,width'"
+            + "    },"
+            + "    th: {"
+            + "      attributes: 'valign,width'"
+            + "    }"
+            + "  },"
 			+ "  keystrokes: ["
             + "    [ 'Ctrl', 'm', 'maximize' ],"
             + "    [ 'Alt', 'b', 'showblocks' ]"
@@ -123,7 +148,12 @@ public class CKEditorConfig {
         try {
             return Json.object(json);
         } catch (IOException e) {
-            log.warn("Ignoring CKEditor " + name + " configuration. Not valid JSON: '{}'", json, e);
+            final String msg = "Ignoring CKEditor " + name + " configuration. Not valid JSON: '" + json + "'";
+            if (log.isDebugEnabled()) {
+                log.warn(msg, e);
+            } else {
+                log.warn(msg);
+            }
         }
         return Json.object();
     }
