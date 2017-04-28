@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Hippo B.V. (http://www.onehippo.com)
+ * Copyright 2013-2017 Hippo B.V. (http://www.onehippo.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@
     ckeditorEvent.data.dialog = null;
   }
 
-  function initInternalLinkPicker(editor, callbackUrl) {
+  function initInternalLinkPicker(editor) {
 
     var LINK_ATTRIBUTES_PARAMETER_MAP = {
         'data-uuid': 'f_uuid',
@@ -117,11 +117,15 @@
         skipToolbarButtonUpdate = false;
       }, PREVENT_DBLCLICK_DELAY);
 
-      var callbackParameters = getElementParameters(selectedLink, LINK_ATTRIBUTES_PARAMETER_MAP);
-      Wicket.Ajax.post({
-        u: callbackUrl,
-        ep: callbackParameters
-      });
+      var linkPickerParameters = getElementParameters(selectedLink, LINK_ATTRIBUTES_PARAMETER_MAP);
+      if (window.Wicket) {
+        window.Wicket.Ajax.post({
+          u: editor.config.hippopicker.internalLink.callbackUrl,
+          ep: linkPickerParameters
+        });
+      } else {
+        editor.fire('openLinkPicker', linkPickerParameters);
+      }
     }
 
     function createLinkFromSelection(selection, linkParameters) {
@@ -226,7 +230,7 @@
     });
   }
 
-  function initImagePicker(editor, callbackUrl) {
+  function initImagePicker(editor) {
     var IMAGE_ATTRIBUTE_PARAMETER_MAP = {
         'data-type': 'f_type',
         'data-uuid': 'f_uuid',
@@ -259,11 +263,11 @@
     }
 
     function openImagePickerDialog(imgElement) {
-      var callbackParameters = {},
+      var imagePickerParameters = {},
           command;
 
       if (imgElement !== null) {
-        callbackParameters = getElementParameters(imgElement, IMAGE_ATTRIBUTE_PARAMETER_MAP);
+        imagePickerParameters = getElementParameters(imgElement, IMAGE_ATTRIBUTE_PARAMETER_MAP);
       }
 
       command = editor.getCommand('pickImage');
@@ -273,10 +277,14 @@
         command.setState(CKEDITOR.TRISTATE_OFF);
       }, PREVENT_DBLCLICK_DELAY);
 
-      Wicket.Ajax.post({
-        u: callbackUrl,
-        ep: callbackParameters
-      });
+      if (window.Wicket) {
+        Wicket.Ajax.post({
+          u: editor.config.hippopicker.image.callbackUrl,
+          ep: imagePickerParameters
+        });
+      } else {
+        editor.fire('openImagePicker', imagePickerParameters);
+      }
     }
 
     editor.ui.addButton('PickImage', {
@@ -318,13 +326,15 @@
     // The 'maximize' plugin breaks the styling of Hippo's modal Wicket dialogs because it removes all CSS classes
     // (including 'hippo-root') from the document body when the editor is maximized. Here we explicitly re-add
     // the 'hippo-root' CSS class when the editor is maximized so the image picker dialog still looks good.
-    editor.on("afterCommandExec", function (event) {
-      if (event.data.name === 'maximize') {
-        if (event.data.command.state === CKEDITOR.TRISTATE_ON) {
-          CKEDITOR.document.getBody().addClass('hippo-root');
+    if (window.Wicket) {
+      editor.on("afterCommandExec", function (event) {
+        if (event.data.name === 'maximize') {
+          if (event.data.command.state === CKEDITOR.TRISTATE_ON) {
+            CKEDITOR.document.getBody().addClass('hippo-root');
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   function makeCompatibleWithLinkPlugin() {
@@ -354,10 +364,8 @@
         lang: 'de,en,fr,nl,es,zh',
 
     init: function (editor) {
-      var config = editor.config.hippopicker;
-
-      initInternalLinkPicker(editor, config.internalLink.callbackUrl);
-      initImagePicker(editor, config.image.callbackUrl);
+      initInternalLinkPicker(editor);
+      initImagePicker(editor);
 
       makeCompatibleWithMaximizePlugin(editor);
       makeCompatibleWithLinkPlugin();
