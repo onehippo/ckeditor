@@ -126,7 +126,12 @@ public class CKEditorConfig {
         try {
             return Json.object(json);
         } catch (IOException e) {
-            log.warn("Ignoring CKEditor " + name + " configuration. Not valid JSON: '{}'", json, e);
+            final String msg = "Ignoring CKEditor " + name + " configuration. Not valid JSON: '" + json + "'";
+            if (log.isDebugEnabled()) {
+                log.warn(msg, e);
+            } else {
+                log.warn(msg);
+            }
         }
         return Json.object();
     }
