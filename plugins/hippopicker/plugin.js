@@ -278,7 +278,7 @@
       }, PREVENT_DBLCLICK_DELAY);
 
       if (window.Wicket) {
-        Wicket.Ajax.post({
+        window.Wicket.Ajax.post({
           u: editor.config.hippopicker.image.callbackUrl,
           ep: imagePickerParameters
         });
