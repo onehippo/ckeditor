@@ -109,9 +109,6 @@ public class CKEditorConfig {
             + "      attributes: 'valign,width'"
             + "    }"
             + "  },"
-		    // TODO: Temporary fix for CHANNELMGR-1237: the hippopicker plugin will be refactored to enable usage outside
-			// of the CMS (e.g. channel-manager), until that is finished the configuration is hardcoded below.
-            + "  hippopicker: { internalLink: {callbackUrl: 'TODO'}, image: {callbackUrl: 'TODO'}},"
 			+ "  keystrokes: ["
             + "    [ 'Ctrl', 'm', 'maximize' ],"
             + "    [ 'Alt', 'b', 'showblocks' ]"
