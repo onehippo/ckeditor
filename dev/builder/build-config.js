@@ -100,6 +100,7 @@ var CKBUILDER_CONFIG = {
 		showborders: 1,
 		smiley: 1,
 		sourcearea: 1,
+		sourcedialog: 1,
 		specialchar: 1,
 		stylescombo: 1,
 		tab: 1,
