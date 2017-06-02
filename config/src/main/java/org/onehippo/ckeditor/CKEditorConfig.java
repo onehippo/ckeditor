@@ -68,7 +68,10 @@ public class CKEditorConfig {
             + "    { name: 'styles', items: [ 'Styles' ] },"
             + "    { name: 'basicstyles', items: [ 'Bold', 'Italic', 'Underline', '-', 'CopyFormatting', 'RemoveFormat' ] },"
             + "    { name: 'clipboard', items: [ 'Undo', 'Redo' ] }"
-            + "  ]"
+            + "  ],"
+            + "  hippo: { "
+            + "    hasBottomToolbar: false"
+            + "  }"
             + "}";
 
     /**
@@ -127,7 +130,10 @@ public class CKEditorConfig {
             + "    { name: 'insert' },"
             + "    { name: 'tools' },"
             + "    { name: 'mode' }"
-            + "  ]"
+            + "  ],"
+            + "  hippo: { "
+            + "    hasBottomToolbar: true"
+            + "  }"
             + "}";
 
     private static final String STYLES_SET_LANGUAGE_PARAM = "{language}";
