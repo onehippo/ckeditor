@@ -88,5 +88,8 @@ if [[ "$ARGS" == *\ \-t\ * ]]; then
 	(cd release/ckeditor &&	npm install && bender init)
 fi
 
+echo "Copy icons of codemirror plugin..."
+cp -r ../../plugins/codemirror/icons release/ckeditor/plugins/codemirror
+
 echo ""
 echo "Release created in the \"release\" directory."
