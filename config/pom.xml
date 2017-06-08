@@ -33,6 +33,7 @@
   <properties>
     <commons-lang.version>2.6</commons-lang.version>
     <easymock.version>3.4</easymock.version>
+    <hippo.testutils.version>1.0.0-SNAPSHOT</hippo.testutils.version>
     <jslint.plugin.version>1.0.1</jslint.plugin.version>
     <junit.version>4.5</junit.version>
     <powermock.version>1.6.5</powermock.version>
@@ -73,6 +74,12 @@
       <groupId>org.powermock</groupId>
       <artifactId>powermock-module-junit4</artifactId>
       <version>${powermock.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.onehippo.cms7</groupId>
+      <artifactId>hippo-cms-testutils</artifactId>
+      <version>${hippo.testutils.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
