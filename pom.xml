@@ -9,14 +9,14 @@
   <parent>
     <groupId>org.onehippo.cms7</groupId>
     <artifactId>hippo-cms7-project</artifactId>
-    <version>29-SNAPSHOT</version>
+    <version>29</version>
     <relativePath />
   </parent>
 
   <name>Hippo CKEditor</name>
   <description>CKEditor for Hippo CMS</description>
   <artifactId>hippo-ckeditor</artifactId>
-  <version>4.7.0-h1-SNAPSHOT</version>
+  <version>4.7.0-h1</version>
   <packaging>pom</packaging>
 
   <scm>
@@ -25,6 +25,19 @@
     <url>https://github.com/onehippo/ckeditor.git</url>
     <tag>HEAD</tag>
   </scm>
+  <repositories>
+    <repository>
+        <id>hippo</id>
+        <name>Hippo Maven 2</name>
+        <url>https://maven.onehippo.com/maven2/</url>
+        <snapshots>
+          <enabled>false</enabled>
+        </snapshots>
+        <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+    </repository>
+  </repositories>
 
   <build>
     <defaultGoal>package</defaultGoal>
