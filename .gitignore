@@ -26,6 +26,9 @@ tests/plugins/mathjax/_assets/mathjax/**
 
 bender-*.log
 
+!.github/*
+.DS_Store
+
 # Hippo-specific additions
 *.iml
 target/

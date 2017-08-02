@@ -1,7 +1,7 @@
 {
 	"name": "ckeditor-dev",
-	"version": "4.7.0",
-  "private": true,
+	"version": "4.7.1",
+	"private": true,
 	"description": "The development version of CKEditor - JavaScript WYSIWYG web text editor.",
   "dependencies": {
     "hippo-ckeditor-codemirror-plugin": "1.16.1",
