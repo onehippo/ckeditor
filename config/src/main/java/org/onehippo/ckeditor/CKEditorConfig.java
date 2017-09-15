@@ -132,7 +132,7 @@ public class CKEditorConfig {
             + "    { name: 'mode' }"
             + "  ],"
             + "  hippo: { "
-            + "    hasBottomToolbar: true"
+            + "    hasBottomToolbar: false"
             + "  }"
             + "}";
 
