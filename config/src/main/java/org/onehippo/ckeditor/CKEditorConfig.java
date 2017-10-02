@@ -17,13 +17,14 @@ package org.onehippo.ckeditor;
 
 import java.io.IOException;
 
+import org.apache.commons.lang.StringUtils;
+import org.onehippo.cms.json.Json;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Default configuration of CKEditor fields in Hippo CMS.

@@ -18,12 +18,13 @@ package org.onehippo.ckeditor;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-
 import org.apache.commons.lang.StringUtils;
+import org.onehippo.cms.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
  * Converts a JSON array with declarative and numeric CKEditor keystrokes configuration

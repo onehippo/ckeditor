@@ -17,10 +17,11 @@ package org.onehippo.ckeditor;
 
 import java.io.IOException;
 
+import org.junit.Test;
+import org.onehippo.cms.json.Json;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-
-import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
