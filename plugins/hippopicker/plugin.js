@@ -66,7 +66,9 @@
         title: 'f_title',
         target: 'f_target'
       },
-      LANG = editor.lang.hippopicker;
+      LANG = editor.lang.hippopicker,
+      LINK_ALLOWED_CONTENT = 'a[!data-uuid,!href,title,target]',
+      LINK_REQUIRED_CONTENT = 'a[data-uuid,href]';
 
     function createLinkAttributePairs(parameters) {
       var pairs = {};
@@ -162,11 +164,13 @@
       label: LANG.internalLinkTooltip,
       command: 'pickInternalLink',
       toolbar: 'links,5',
-      allowedContent: 'a[!data-uuid,!href,title,target]',
-      requiredContent: 'a[!data-uuid,!href]'
+      allowedContent: LINK_ALLOWED_CONTENT,
+      requiredContent: LINK_REQUIRED_CONTENT
     });
 
     editor.addCommand('pickInternalLink', {
+      allowedContent: LINK_ALLOWED_CONTENT,
+      requiredContent: LINK_REQUIRED_CONTENT,
 
       startDisabled: true,
 
@@ -240,7 +244,9 @@
         width: 'f_width',
         height: 'f_height'
       },
-      LANG = editor.lang.hippopicker;
+      LANG = editor.lang.hippopicker,
+      IMAGE_ALLOWED_CONTENT = 'img[!data-type,!data-uuid,!src,alt,align,width,height]',
+      IMAGE_REQUIRED_CONTENT = 'img[data-type,data-uuid,src]';
 
     function containsUuid(imageParameters) {
       return imageParameters.hasOwnProperty('f_uuid') && imageParameters.f_uuid !== '';
@@ -291,11 +297,13 @@
       label: LANG.imageTooltip,
       command: 'pickImage',
       toolbar: 'insert,5',
-      allowedContent: 'img[!data-type,!data-uuid,!src,alt,align,width,height]',
-      requiredContent: 'img[!data-type,!data-uuid,!src]'
+      allowedContent: IMAGE_ALLOWED_CONTENT,
+      requiredContent: IMAGE_REQUIRED_CONTENT
     });
 
     editor.addCommand('pickImage', {
+      allowedContent: IMAGE_ALLOWED_CONTENT,
+      requiredContent: IMAGE_REQUIRED_CONTENT,
       exec: function () {
         openImagePickerDialog(getSelectedImageOrNull());
       }
