@@ -16,16 +16,26 @@ The following external plugins are included:
 
 ## Versions
 
-A Hippo-specific CKEditor build adds a 1-based nano version to the CKEditor version it extends, prefixed with `-h`.
-For example, version `4.3.0-h1` extends CKEditor `4.3.0`.
+A Hippo-specific CKEditor build adds a semantic version to the CKEditor version it extends, prefixed with `-h`.
+The major and minor number of this additional version match the Hippo release in which the CKEditor build is used. 
+For example, version `4.7.1-h12.1.0` extends CKEditor `4.7.1` and is used in Hippo release `12.1`. The patch number 
+(`0` in this example) is used to version the Hippo-specific CKEditor changes in that branch.  
 
-Each branch `hippo/<version>` contains all commits in the CKEditor branch `release/<version>`
-plus all Hippo-specific modifications.
+Each branch `hippo/<version>` contains all commits in the CKEditor branch `release/<version>` plus all Hippo-specific 
+modifications. 
 
-A release is available in a tag are named `hippo/<version>`, e.g. `hippo/4.3.0-h1`.
+There can be separate maintenance branches that contain Hippo-specific modifications limited to a specific Hippo 
+release. For example, the branch `hippo/release/12.0` would contain the Hippo CKEditor version for Hippo 12.0. The 
+`hippo/<version>` branch acts as the `master` branch for the next Hippo release.   
+
+A release is available in a tag are named `hippo/<version>`, e.g. `hippo/4.7.1-h12.1.0`. 
 
 The script `/dev/builder/build.sh` needs a 'build version' parameter, which is burned into the generated code.
-Hippo CMS uses the same version number as in the tag name (e.g. '4.3.0-h1').
+Hippo CMS uses the same version number as in the tag name (e.g. '4.7.1-h12.1.0').
+
+Note that the version scheme of Hippo CKEditor changed over time. Until Hippo 11.x, the CKEditor version was extended 
+with a single nano patch version prefixed with `-h` (e.g. `4.3.0-h1`). Hippo 12.x introduced the semantic Hippo-specific
+version and the maintenance branches.
 
 ### Upstream changes
 
