@@ -15,7 +15,7 @@
 		"benderjs-jquery": "^0.3.0",
 		"benderjs-sinon": "^0.3.1",
 		"benderjs-yui": "^0.3.2",
-    	"benderjs-yui-beautified": "0.0.6",
+		"benderjs-yui-beautified": "0.0.6",
 		"grunt": "^1.0.1",
 		"grunt-contrib-imagemin": "^1.0.0",
 		"grunt-jscs": "^3.0.1",
@@ -31,6 +31,10 @@
 	},
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"engines": {
+		"node": ">=8",
+		"npm": ">=5"
 	},
 	"author": "CKSource (http://cksource.com/)",
 	"license": "(GPL-2.0 OR LGPL-2.1 OR MPL-1.1)",
