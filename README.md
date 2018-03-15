@@ -64,7 +64,7 @@ branch must be pushed to origin, so other people can fetch it too. For example, 
 
 Prerequisites:
 
-  - [NodeJS (6.x.x)](https://nodejs.org/)
+  - [NodeJS (8.x.x)](https://nodejs.org/)
   - [npm](https://www.npmjs.com/)
   - [Maven](http://maven.apache.org/)
 
@@ -88,7 +88,7 @@ property of the `package.json.` If the external plugin does not contain a (valid
 github group and add the `package.json` yourself.
 
 Make sure to copy the plugin code from `node_modules/` to `plugins/` in `dev/builder/build.sh`.
-Add the plugin to the configuration of the Maven clean plugin in `pom.xml` so the copied sources 
+Add the plugin to the configuration of the Maven clean plugin in `pom.xml` so the copied sources
 will be cleaned too.
 
 ### Updating an external plugin

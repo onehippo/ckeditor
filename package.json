@@ -3,12 +3,12 @@
 	"version": "4.5.11",
 	"private": true,
 	"description": "The development version of CKEditor - JavaScript WYSIWYG web text editor.",
-  "dependencies": {
-    "hippo-ckeditor-codemirror-plugin": "1.13.0",
-    "hippo-ckeditor-textselection-plugin": "1.06.0",
-    "hippo-ckeditor-wordcount-plugin": "0.13.0",
-    "hippo-ckeditor-youtube-plugin": "2.0.9"
-  },
+	"dependencies": {
+		"hippo-ckeditor-codemirror-plugin": "1.13.1",
+		"hippo-ckeditor-textselection-plugin": "1.06.1",
+		"hippo-ckeditor-wordcount-plugin": "0.13.1",
+		"hippo-ckeditor-youtube-plugin": "2.0.10"
+	},
 	"devDependencies": {
 		"benderjs-coverage": "^0.2.1",
 		"benderjs": "^0.4.1",
@@ -30,6 +30,10 @@
 	},
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"engines": {
+		"node": ">=8",
+		"npm": ">=5"
 	},
 	"author": "CKSource (http://cksource.com/)",
 	"license": "For licensing, see LICENSE.md or http://ckeditor.com/license.",
